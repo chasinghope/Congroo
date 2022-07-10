@@ -18,9 +18,11 @@ public class EditorTestWindow : EditorWindow
         if (GUILayout.Button("≤‚ ‘Log"))
         {
             LogManager.Log(LogCustomEnum.CongrooEditor, "≤‚ ‘1");
+            LogManager.Log(LogCustomEnum.Temp, "≤‚ ‘4");
             LogManager.Log(LogCustomEnum.Normal, "≤‚ ‘2");
             LogManager.Log(LogCustomEnum.Congroo, "≤‚ ‘3");
             LogManager.Log(LogCustomEnum.CongrooEditor, "≤‚ ‘4");
+            LogManager.Log(LogCustomEnum.Temp, "≤‚ ‘4");
         }
     }
 }

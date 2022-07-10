@@ -12,10 +12,6 @@ namespace Congroo.Core
         Temp,
     }
 
-    #region 
-
-    #endregion
-
     internal class LogCustomData
     {
         public bool IsFilter = false;

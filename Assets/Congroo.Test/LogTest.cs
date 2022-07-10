@@ -8,9 +8,11 @@ public class LogTest : MonoBehaviour
     void Start()
     {
         LogManager.Log(LogCustomEnum.CongrooEditor, "≤‚ ‘1");
+        LogManager.Log(LogCustomEnum.Temp, "≤‚ ‘4");
         LogManager.Log(LogCustomEnum.Normal, "≤‚ ‘2");
         LogManager.Log(LogCustomEnum.Congroo, "≤‚ ‘3");
         LogManager.Log(LogCustomEnum.CongrooEditor, "≤‚ ‘4");
+        LogManager.Log(LogCustomEnum.Temp, "≤‚ ‘4");
     }
 
     // Update is called once per frame
