@@ -1,0 +1,17 @@
+{
+    "name": "Congroo.Test",
+    "rootNamespace": "",
+    "references": [
+        "GUID:7f90f82d5fb462546af91a0099578c43",
+        "GUID:2bafac87e7f4b9b418d9448d219b01ab"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
