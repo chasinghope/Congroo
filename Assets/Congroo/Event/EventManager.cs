@@ -18,6 +18,12 @@ namespace Congroo.Core
         }
 
         public Dictionary<int, Event> Events;
+        private ObjectPool<EventArg> mEventArgPool;
+
+        private EventManager()
+        {
+
+        }
 
         protected override void InstanceCreated()
         {
@@ -28,6 +34,7 @@ namespace Congroo.Core
         public void Initialize()
         {
             Events = new Dictionary<int, Event>();
+            mEventArgPool = new ObjectPool<EventArg>();
         }
 
 
@@ -68,14 +75,60 @@ namespace Congroo.Core
         }
 
 
-        /// <summary>
-        /// 事件出发
-        /// </summary>
-        /// <param name="nMsgCode"></param>
-        /// <param name="rEventArg"></param>
-        public void Trigger(int nMsgCode, params object[] rEventArgs)
+
+        public void Trigger(int nMsgCode, object rArg1)
         {
-            EventArg rEventArg = new EventArg(rEventArgs);
+            EventArg rEventArg = mEventArgPool.Allocate();
+            rEventArg.SetParams(rArg1);
+            TriggerArg(nMsgCode, rEventArg);
+        }
+
+        public void Trigger(int nMsgCode, object rArg1, object rArg2)
+        {
+            EventArg rEventArg = mEventArgPool.Allocate();
+            rEventArg.SetParams(rArg1, rArg2);
+            TriggerArg(nMsgCode, rEventArg);
+        }
+
+        public void Trigger(int nMsgCode, object rArg1, object rArg2, object rArg3)
+        {
+            EventArg rEventArg = mEventArgPool.Allocate();
+            rEventArg.SetParams(rArg1, rArg2, rArg3);
+            TriggerArg(nMsgCode, rEventArg);
+        }
+
+        public void Trigger(int nMsgCode, object rArg1, object rArg2, object rArg3, object rArg4)
+        {
+            EventArg rEventArg = mEventArgPool.Allocate();
+            rEventArg.SetParams(rArg1, rArg2, rArg3, rArg4);
+            TriggerArg(nMsgCode, rEventArg);
+        }
+
+        public void Trigger(int nMsgCode, object rArg1, object rArg2, object rArg3, object rArg4, object rArg5)
+        {
+            EventArg rEventArg = mEventArgPool.Allocate();
+            rEventArg.SetParams(rArg1, rArg2, rArg3, rArg4, rArg5);
+            TriggerArg(nMsgCode, rEventArg);
+        }
+
+        public void Trigger(int nMsgCode, object rArg1, object rArg2, object rArg3, object rArg4, object rArg5, object rArg6)
+        {
+            EventArg rEventArg = mEventArgPool.Allocate();
+            rEventArg.SetParams(rArg1, rArg2, rArg3, rArg4, rArg5, rArg6);
+            TriggerArg(nMsgCode, rEventArg);
+        }
+
+        public void Trigger(int nMsgCode, object rArg1, object rArg2, object rArg3, object rArg4, object rArg5, object rArg6, object rArg7)
+        {
+            EventArg rEventArg = mEventArgPool.Allocate();
+            rEventArg.SetParams(rArg1, rArg2, rArg3, rArg4, rArg5, rArg6, rArg7);
+            TriggerArg(nMsgCode, rEventArg);
+        }
+
+        public void Trigger(int nMsgCode, object rArg1, object rArg2, object rArg3, object rArg4, object rArg5, object rArg6, object rArg7, object rArg8)
+        {
+            EventArg rEventArg = mEventArgPool.Allocate();
+            rEventArg.SetParams(rArg1, rArg2, rArg3, rArg4, rArg5, rArg6, rArg7, rArg8);
             TriggerArg(nMsgCode, rEventArg);
         }
 

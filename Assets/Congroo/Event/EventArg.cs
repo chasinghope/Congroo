@@ -1,15 +1,38 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Congroo.Core
 {
-    public class EventArg
+    public class EventArg : IObjectUnit
     {
         private List<object> mArgs;
 
-        public EventArg(params object[] rArgs)
+
+        public EventArg()
         {
-            this.mArgs = new List<object>(rArgs);
+            this.mArgs = new List<object>();
         }
+
+
+
+
+        #region Implementation IObjectUnit interface
+
+        public bool IsUsed { get; set; }
+
+        public void Enable()
+        {
+            IsUsed = true;
+        }
+
+        public void Disable()
+        {
+            this.mArgs.Clear();
+            IsUsed = false;
+        }
+
+        #endregion
+
 
         public T Get<T>(int nIndex)
         {
@@ -21,6 +44,79 @@ namespace Congroo.Core
         public void Clear()
         {
             mArgs.Clear();
+        }
+
+        public void SetParams(object rArg1)
+        {
+            this.mArgs.Clear();
+            this.mArgs.Add(rArg1);
+        }
+        public void SetParams(object rArg1, object rArg2)
+        {
+            this.mArgs.Clear();
+            this.mArgs.Add(rArg1);
+            this.mArgs.Add(rArg2);
+        }
+
+        public void SetParams(object rArg1, object rArg2, object rArg3)
+        {
+            this.mArgs.Clear();
+            this.mArgs.Add(rArg1);
+            this.mArgs.Add(rArg2);
+            this.mArgs.Add(rArg3);
+        }
+
+        public void SetParams(object rArg1, object rArg2, object rArg3, object rArg4)
+        {
+            this.mArgs.Clear();
+            this.mArgs.Add(rArg1);
+            this.mArgs.Add(rArg2);
+            this.mArgs.Add(rArg3);
+            this.mArgs.Add(rArg4);
+        }
+        public void SetParams(object rArg1, object rArg2, object rArg3, object rArg4, object rArg5)
+        {
+            this.mArgs.Clear();
+            this.mArgs.Add(rArg1);
+            this.mArgs.Add(rArg2);
+            this.mArgs.Add(rArg3);
+            this.mArgs.Add(rArg4);
+            this.mArgs.Add(rArg5);
+        }
+        public void SetParams(object rArg1, object rArg2, object rArg3, object rArg4, object rArg5, object rArg6)
+        {
+            this.mArgs.Clear();
+            this.mArgs.Add(rArg1);
+            this.mArgs.Add(rArg2);
+            this.mArgs.Add(rArg3);
+            this.mArgs.Add(rArg4);
+            this.mArgs.Add(rArg5);
+            this.mArgs.Add(rArg6);
+        }
+
+        public void SetParams(object rArg1, object rArg2, object rArg3, object rArg4, object rArg5, object rArg6, object rArg7)
+        {
+            this.mArgs.Clear();
+            this.mArgs.Add(rArg1);
+            this.mArgs.Add(rArg2);
+            this.mArgs.Add(rArg3);
+            this.mArgs.Add(rArg4);
+            this.mArgs.Add(rArg5);
+            this.mArgs.Add(rArg6);
+            this.mArgs.Add(rArg7);
+        }
+
+        public void SetParams(object rArg1, object rArg2, object rArg3, object rArg4, object rArg5, object rArg6, object rArg7, object rArg8)
+        {
+            this.mArgs.Clear();
+            this.mArgs.Add(rArg1);
+            this.mArgs.Add(rArg2);
+            this.mArgs.Add(rArg3);
+            this.mArgs.Add(rArg4);
+            this.mArgs.Add(rArg5);
+            this.mArgs.Add(rArg6);
+            this.mArgs.Add(rArg7);
+            this.mArgs.Add(rArg8);
         }
     }
 }
