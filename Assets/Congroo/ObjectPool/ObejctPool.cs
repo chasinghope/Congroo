@@ -26,7 +26,6 @@ namespace Congroo.Core
             }
         }
 
-
         public void RegisterCallback(Action<T> rAllocateAction, Action<T> rFreeAction)
         {
             mAllocateAction = rAllocateAction;
@@ -42,14 +41,11 @@ namespace Congroo.Core
             return obj;
         }
 
-
         public void Free(T rObjectUnit)
         {
             if (!rObjectUnit.IsUsed) return;
             mUseList.Remove(rObjectUnit);
         }
-
-
 
         public void ResetFrame()
         {
@@ -71,8 +67,5 @@ namespace Congroo.Core
             mUseList.Clear();
             mFreeStack.Clear();
         }
-
     }
-
-
 }
