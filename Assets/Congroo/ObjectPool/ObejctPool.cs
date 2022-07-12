@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -6,9 +7,11 @@ namespace Congroo.Core
 {
     public class ObjectPool<T> where T : IObjectUnit, new()
     {
-        Stack<T> mUseStack = new Stack<T>();
+        List<T> mUseList = new List<T>();
         Stack<T> mFreeStack = new Stack<T>();
 
+        private Action<T> mAllocateAction;
+        private Action<T> mFreeAction;
 
         public ObjectPool()
         {
@@ -23,31 +26,49 @@ namespace Congroo.Core
             }
         }
 
+
+        public void RegisterCallback(Action<T> rAllocateAction, Action<T> rFreeAction)
+        {
+            mAllocateAction = rAllocateAction;
+            mFreeAction = rFreeAction;
+        }
+
         public T Allocate()
         {
             T obj = mFreeStack.Count > 0 ? mFreeStack.Pop() : new T();
-            mUseStack.Push(obj);
-            obj.Enable();
+            obj.IsUsed = true;
+            mUseList.Add(obj);
+            mAllocateAction?.Invoke(obj);
             return obj;
         }
 
+
+        public void Free(T rObjectUnit)
+        {
+            if (!rObjectUnit.IsUsed) return;
+            mUseList.Remove(rObjectUnit);
+        }
+
+
+
         public void ResetFrame()
         {
-            while (mUseStack.Count > 0)
+            foreach (var obj in mUseList)
             {
-                T obj = mUseStack.Pop();
-                obj.Disable();
+                mFreeAction?.Invoke(obj);
+                obj.IsUsed = false;
                 mFreeStack.Push(obj);
             }
         }
 
-        public void Clear()
+        public void ClearAll()
         {
-            foreach (var obj in mUseStack)
+            foreach (var obj in mUseList)
             {
-                obj.Disable();
+                mFreeAction?.Invoke(obj);
+                obj.IsUsed = false;
             }
-            mUseStack.Clear();
+            mUseList.Clear();
             mFreeStack.Clear();
         }
 

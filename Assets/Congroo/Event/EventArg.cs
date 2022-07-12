@@ -8,6 +8,12 @@ namespace Congroo.Core
         private List<object> mArgs;
 
 
+        #region Implementation IObjectUnit interface
+
+        public bool IsUsed { get; set; }
+
+        #endregion
+
         public EventArg()
         {
             this.mArgs = new List<object>();
@@ -16,22 +22,7 @@ namespace Congroo.Core
 
 
 
-        #region Implementation IObjectUnit interface
 
-        public bool IsUsed { get; set; }
-
-        public void Enable()
-        {
-            IsUsed = true;
-        }
-
-        public void Disable()
-        {
-            this.mArgs.Clear();
-            IsUsed = false;
-        }
-
-        #endregion
 
 
         public T Get<T>(int nIndex)

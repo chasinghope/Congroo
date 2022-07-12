@@ -81,6 +81,7 @@ namespace Congroo.Core
             EventArg rEventArg = mEventArgPool.Allocate();
             rEventArg.SetParams(rArg1);
             TriggerArg(nMsgCode, rEventArg);
+            mEventArgPool.Free(rEventArg);
         }
 
         public void Trigger(int nMsgCode, object rArg1, object rArg2)
@@ -88,6 +89,7 @@ namespace Congroo.Core
             EventArg rEventArg = mEventArgPool.Allocate();
             rEventArg.SetParams(rArg1, rArg2);
             TriggerArg(nMsgCode, rEventArg);
+            mEventArgPool.Free(rEventArg);
         }
 
         public void Trigger(int nMsgCode, object rArg1, object rArg2, object rArg3)
@@ -95,6 +97,7 @@ namespace Congroo.Core
             EventArg rEventArg = mEventArgPool.Allocate();
             rEventArg.SetParams(rArg1, rArg2, rArg3);
             TriggerArg(nMsgCode, rEventArg);
+            mEventArgPool.Free(rEventArg);
         }
 
         public void Trigger(int nMsgCode, object rArg1, object rArg2, object rArg3, object rArg4)
@@ -102,6 +105,7 @@ namespace Congroo.Core
             EventArg rEventArg = mEventArgPool.Allocate();
             rEventArg.SetParams(rArg1, rArg2, rArg3, rArg4);
             TriggerArg(nMsgCode, rEventArg);
+            mEventArgPool.Free(rEventArg);
         }
 
         public void Trigger(int nMsgCode, object rArg1, object rArg2, object rArg3, object rArg4, object rArg5)
@@ -109,6 +113,7 @@ namespace Congroo.Core
             EventArg rEventArg = mEventArgPool.Allocate();
             rEventArg.SetParams(rArg1, rArg2, rArg3, rArg4, rArg5);
             TriggerArg(nMsgCode, rEventArg);
+            mEventArgPool.Free(rEventArg);
         }
 
         public void Trigger(int nMsgCode, object rArg1, object rArg2, object rArg3, object rArg4, object rArg5, object rArg6)
@@ -116,6 +121,7 @@ namespace Congroo.Core
             EventArg rEventArg = mEventArgPool.Allocate();
             rEventArg.SetParams(rArg1, rArg2, rArg3, rArg4, rArg5, rArg6);
             TriggerArg(nMsgCode, rEventArg);
+            mEventArgPool.Free(rEventArg);
         }
 
         public void Trigger(int nMsgCode, object rArg1, object rArg2, object rArg3, object rArg4, object rArg5, object rArg6, object rArg7)
@@ -123,6 +129,7 @@ namespace Congroo.Core
             EventArg rEventArg = mEventArgPool.Allocate();
             rEventArg.SetParams(rArg1, rArg2, rArg3, rArg4, rArg5, rArg6, rArg7);
             TriggerArg(nMsgCode, rEventArg);
+            mEventArgPool.Free(rEventArg);
         }
 
         public void Trigger(int nMsgCode, object rArg1, object rArg2, object rArg3, object rArg4, object rArg5, object rArg6, object rArg7, object rArg8)
@@ -130,6 +137,7 @@ namespace Congroo.Core
             EventArg rEventArg = mEventArgPool.Allocate();
             rEventArg.SetParams(rArg1, rArg2, rArg3, rArg4, rArg5, rArg6, rArg7, rArg8);
             TriggerArg(nMsgCode, rEventArg);
+            mEventArgPool.Free(rEventArg);
         }
 
 
