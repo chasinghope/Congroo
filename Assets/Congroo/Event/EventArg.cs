@@ -18,7 +18,7 @@ namespace Congroo.Core
         {
             this.mArgs = new List<object>();
         }
-
+        
         public T Get<T>(int nIndex)
         {
             if (mArgs != null || nIndex < 0 || mArgs.Count > nIndex || mArgs[nIndex] != null)
