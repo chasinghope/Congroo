@@ -9,6 +9,7 @@ namespace Congroo.Core
         Normal,
         Congroo,
         CongrooEditor,
+        Diagnost,
         Temp,
     }
 

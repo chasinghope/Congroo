@@ -10,6 +10,7 @@ namespace Congroo.Core
             { LogCustomEnum.Normal,         new LogCustomData(false, LogCustomEnum.Normal,          "Normal",           Color.white) },
             { LogCustomEnum.Congroo,        new LogCustomData(false, LogCustomEnum.Congroo,         "Congroo",          Color.green) },
             { LogCustomEnum.CongrooEditor,  new LogCustomData(false, LogCustomEnum.CongrooEditor,   "CongrooEditor",    Color.yellow)},
+            { LogCustomEnum.Diagnost,       new LogCustomData(false, LogCustomEnum.Diagnost,   "Diagnost",    new Color(1f, 165/255f, 0f))},
             { LogCustomEnum.Temp,           new LogCustomData(false, LogCustomEnum.Temp,            "Test",             new Color(176/255f, 224/255f, 230/255f))},
         };
 
