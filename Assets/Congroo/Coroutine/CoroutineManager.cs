@@ -1,32 +1,55 @@
-using System.Collections;
-using System.Collections.Generic;
+﻿//======================================================================
+//        Copyright (C) 2015-2020 Winddy He. All rights reserved
+//        Email: hgplan@126.com
+//======================================================================
 using UnityEngine;
+using System.Collections;
 using System;
 
 namespace Congroo.Core
 {
+    /// <summary>
+    /// 协程管理器
+    /// </summary>
     public class CoroutineManager : Singleton<CoroutineManager>
     {
         private CoroutineMono mCoroutineMono;
 
-        private CoroutineManager()
-        {
+        private CoroutineManager() { }
 
+        public void Initialize()
+        {
+            GameObject coroutineRootObj = new GameObject("___CoroutineRoot");
+            coroutineRootObj.transform.position = Vector3.zero;
+            this.mCoroutineMono = coroutineRootObj.AddComponent<CoroutineMono>();
+
+            if (Application.isPlaying)
+            {
+                GameObject.DontDestroyOnLoad(coroutineRootObj);
+            }
         }
 
-        protected override void InstanceCreated()
+        public CoroutineHandler StartHandler(IEnumerator rIEnum)
         {
-            GameObject go = new GameObject("CoroutineManager");
-            mCoroutineMono = go.AddComponent<CoroutineMono>();
-            //DontDestroyOnLoad(go);
+            CoroutineHandler rHandler = new CoroutineHandler(rIEnum);
+            this.mCoroutineMono.StartCoroutine(rIEnum);
+            return rHandler;
         }
 
-
-        public CoroutineHandler Start(IEnumerator rIEnumerator)
+        public Coroutine Start(IEnumerator rIEnum)
         {
-            Coroutine cor = mCoroutineMono.StartCoroutine(rIEnumerator);
-            return new CoroutineHandler();
+            return this.mCoroutineMono.StartCoroutine(rIEnum);
+        }
+
+        public void Stop(CoroutineHandler rCoroutineHandler)
+        {
+            if (rCoroutineHandler != null)
+                this.mCoroutineMono.StopCoroutine(rCoroutineHandler.IEnum);
+        }
+        public void Stop(Coroutine rCoroutine)
+        {
+            this.mCoroutineMono.StopCoroutine(rCoroutine);
         }
     }
-
 }
+
