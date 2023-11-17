@@ -34,7 +34,7 @@ namespace Congroo.Core
             int intValue = rEventArg.Get<int>(0);
             string stringValue = rEventArg.Get<string>(1);
             Dog dogValue = rEventArg.Get<Dog>(2);
-            LogManager.Log(LogCustomEnum.Temp, $"SS {intValue}     {stringValue}       {dogValue.IsMale}");
+            CLog.L(LType.Temp, $"SS {intValue}     {stringValue}       {dogValue.IsMale}");
         }
     }
 }

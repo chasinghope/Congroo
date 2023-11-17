@@ -17,7 +17,7 @@ public class TriggerTest : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Space))
         {
             EventManager.Instance.Trigger(TestEvents.TestEvent001, 10, "dog", new Dog() { IsMale = true });
-            LogManager.Log(LogCustomEnum.Temp, $"{TestEvents.TestEvent001}  事件出发啦");
+            CLog.L(LType.Temp, $"{TestEvents.TestEvent001}  事件出发啦");
         }
     }
 }

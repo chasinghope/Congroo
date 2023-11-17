@@ -9,9 +9,9 @@ public class CoroutineTest : MonoBehaviour
     // Start is called before the first frame update
     async void Start()
     {
-        LogManager.Log(LogCustomEnum.Temp, "Start");
+        CLog.L(LType.Temp, "Start");
         string taskResult = await Dosomething();
-        LogManager.Log(LogCustomEnum.Temp, "End " + taskResult);
+        CLog.L(LType.Temp, "End " + taskResult);
     }
 
     // Update is called once per frame

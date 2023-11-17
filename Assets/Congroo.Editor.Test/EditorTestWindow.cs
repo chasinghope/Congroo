@@ -17,12 +17,12 @@ public class EditorTestWindow : EditorWindow
     {
         if (GUILayout.Button("≤‚ ‘Log"))
         {
-            LogManager.Log(LogCustomEnum.CongrooEditor, "≤‚ ‘1");
-            LogManager.Log(LogCustomEnum.Temp, "≤‚ ‘4");
-            LogManager.Log(LogCustomEnum.Normal, "≤‚ ‘2");
-            LogManager.Log(LogCustomEnum.Congroo, "≤‚ ‘3");
-            LogManager.Log(LogCustomEnum.CongrooEditor, "≤‚ ‘4");
-            LogManager.Log(LogCustomEnum.Temp, "≤‚ ‘4");
+            CLog.L(LType.CongrooEditor, "≤‚ ‘1");
+            CLog.L(LType.Temp, "≤‚ ‘4");
+            CLog.L(LType.Normal, "≤‚ ‘2");
+            CLog.L(LType.Congroo, "≤‚ ‘3");
+            CLog.L(LType.CongrooEditor, "≤‚ ‘4");
+            CLog.L(LType.Temp, "≤‚ ‘4");
         }
     }
 }

@@ -89,8 +89,8 @@ namespace Congroo.Core
 
         public void Debug()
         {
-            LogManager.Log(LogCustomEnum.Congroo, mSaveFilePath);
-            LogManager.Log(LogCustomEnum.Congroo, JsonConvert.SerializeObject(mGameSaveData));
+            CLog.L(LType.Congroo, mSaveFilePath);
+            CLog.L(LType.Congroo, JsonConvert.SerializeObject(mGameSaveData));
         }
 
     }

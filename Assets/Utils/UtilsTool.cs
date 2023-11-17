@@ -68,7 +68,7 @@ namespace Congroo.Core
             }
             else
             {
-                LogManager.LogError(LogCustomEnum.Congroo, $"颜色格式错误 {hexFormat}");
+                CLog.LE(LType.Congroo, $"颜色格式错误 {hexFormat}");
                 return Color.white;
             }
         }

@@ -25,7 +25,7 @@ public class ListenerTest : MonoBehaviour
         int intValue = obj.Get<int>(0);
         string stringValue = obj.Get<string>(1);
         Dog dogValue = obj.Get<Dog>(2);
-        LogManager.Log(LogCustomEnum.Temp, $"{intValue}     {stringValue}       {dogValue.IsMale}");
+        CLog.L(LType.Temp, $"{intValue}     {stringValue}       {dogValue.IsMale}");
     }
 
     private void OnDisable()

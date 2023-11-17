@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Congroo.Core
 {
-    public enum LogCustomEnum
+    public enum LType
     {
         Normal,
         Congroo,
@@ -16,11 +16,11 @@ namespace Congroo.Core
     internal class LogCustomData
     {
         public bool IsFilter = false;
-        public LogCustomEnum Type;
+        public LType Type;
         public string Tag = "Temp";
         public Color Color = Color.white;
 
-        public LogCustomData(bool bIsFilter, LogCustomEnum rType, string rTag, Color rColor)
+        public LogCustomData(bool bIsFilter, LType rType, string rTag, Color rColor)
         {
             IsFilter = bIsFilter;
             Type = rType;
