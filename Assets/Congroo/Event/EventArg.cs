@@ -104,4 +104,10 @@ namespace Congroo.Core
             this.mArgs.Add(rArg8);
         }
     }
+
+    public class EventWrapper
+    {
+        public uint EventCode;
+        public Action<EventArg> EventHandler;
+    }
 }

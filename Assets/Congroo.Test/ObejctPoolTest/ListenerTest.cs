@@ -36,5 +36,5 @@ public class ListenerTest : MonoBehaviour
 
 public static class TestEvents
 {
-    public static int TestEvent001 = 100000;
+    public const uint TestEvent001 = 10000;
 }

@@ -18,21 +18,21 @@ namespace Congroo.Core
         public static void Log(LogCustomEnum rType, object rObj)
         {
             if (LogCusomtConfigDict[rType].IsFilter) return;
-            Debug.Log($"{LogCusomtConfigDict[rType]}  -{rObj}");   
+            Debug.Log($"{LogCusomtConfigDict[rType]}  {rObj}");   
         }
 
         [System.Diagnostics.Conditional("UNITY_EDITOR")]
         public static void LogWarning(LogCustomEnum rType, object rObj)
         {
             if (LogCusomtConfigDict[rType].IsFilter) return;
-            Debug.Log($"{LogCusomtConfigDict[rType]}  -{rObj}");
+            Debug.Log($"{LogCusomtConfigDict[rType]}  {rObj}");
         }
 
         [System.Diagnostics.Conditional("UNITY_EDITOR")]
         public static void LogError(LogCustomEnum rType, object rObj)
         {
             if (LogCusomtConfigDict[rType].IsFilter) return;
-            Debug.Log($"{LogCusomtConfigDict[rType]}  -{rObj}");
+            Debug.Log($"{LogCusomtConfigDict[rType]}  {rObj}");
         }
     }
 }

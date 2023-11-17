@@ -1,9 +1,8 @@
+using Congroo.Core;
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
-using UnityFx.Async;
-using Congroo.Core;
 
 public class CoroutineTest : MonoBehaviour
 {
@@ -23,7 +22,7 @@ public class CoroutineTest : MonoBehaviour
 
     private async Task<string>  Dosomething()
     {
-        await AsyncResult.Delay(2.0f);
+        await Task.Yield();
         return "Dog";
     } 
 

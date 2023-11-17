@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
 using System;
+using System.Reflection;
+using Unity.VisualScripting;
 
 namespace Congroo.Core
 {
@@ -7,17 +9,17 @@ namespace Congroo.Core
     {
         public class Event
         {
-            public int MsgCode;
+            public uint MsgCode;
             public List<Action<EventArg>> ListenerActions;
 
-            public Event(int msgCode, List<Action<EventArg>> listenerActions)
+            public Event(uint msgCode, List<Action<EventArg>> listenerActions)
             {
                 MsgCode = msgCode;
                 ListenerActions = listenerActions;
             }
         }
 
-        public Dictionary<int, Event> Events;
+        public Dictionary<uint, Event> Events;
         private ObjectPool<EventArg> mEventArgPool;
 
         private EventManager()
@@ -33,7 +35,7 @@ namespace Congroo.Core
 
         public void Initialize()
         {
-            Events = new Dictionary<int, Event>();
+            Events = new Dictionary<uint, Event>();
             mEventArgPool = new ObjectPool<EventArg>();
         }
 
@@ -43,19 +45,19 @@ namespace Congroo.Core
         /// </summary>
         /// <param name="nMsgCode"></param>
         /// <param name="rListenerCallback"></param>
-        public void Binding(int nMsgCode, Action<EventArg> rListenerCallback)
+        public void Binding(uint nMsgCode, Action<EventArg> rListenerCallback)
         {
-            if(Events.TryGetValue(nMsgCode, out Event evt))
+            if (Events.TryGetValue(nMsgCode, out Event evt))
             {
-                if(evt.ListenerActions == null)
+                if (evt.ListenerActions == null)
                     evt.ListenerActions = new List<Action<EventArg>>();
 
-                if(!evt.ListenerActions.Contains(rListenerCallback))
+                if (!evt.ListenerActions.Contains(rListenerCallback))
                     evt.ListenerActions.Add(rListenerCallback);
             }
             else
             {
-                Events.Add(nMsgCode, new Event(nMsgCode, new List<Action<EventArg>>() { rListenerCallback } ));
+                Events.Add(nMsgCode, new Event(nMsgCode, new List<Action<EventArg>>() { rListenerCallback }));
             }
         }
 
@@ -65,18 +67,16 @@ namespace Congroo.Core
         /// </summary>
         /// <param name="nMsgCode"></param>
         /// <param name="rEventCallback"></param>
-        public void Unbinding(int nMsgCode, Action<EventArg> rEventCallback)
+        public void Unbinding(uint nMsgCode, Action<EventArg> rEventCallback)
         {
-            if( Events.TryGetValue(nMsgCode, out Event evt))
+            if (Events.TryGetValue(nMsgCode, out Event evt))
             {
                 if (evt.ListenerActions != null)
                     evt.ListenerActions.Remove(rEventCallback);
             }
         }
 
-
-
-        public void Trigger(int nMsgCode, object rArg1)
+        public void Trigger(uint nMsgCode, object rArg1)
         {
             EventArg rEventArg = mEventArgPool.Allocate();
             rEventArg.SetParams(rArg1);
@@ -84,7 +84,7 @@ namespace Congroo.Core
             mEventArgPool.Free(rEventArg);
         }
 
-        public void Trigger(int nMsgCode, object rArg1, object rArg2)
+        public void Trigger(uint nMsgCode, object rArg1, object rArg2)
         {
             EventArg rEventArg = mEventArgPool.Allocate();
             rEventArg.SetParams(rArg1, rArg2);
@@ -92,7 +92,7 @@ namespace Congroo.Core
             mEventArgPool.Free(rEventArg);
         }
 
-        public void Trigger(int nMsgCode, object rArg1, object rArg2, object rArg3)
+        public void Trigger(uint nMsgCode, object rArg1, object rArg2, object rArg3)
         {
             EventArg rEventArg = mEventArgPool.Allocate();
             rEventArg.SetParams(rArg1, rArg2, rArg3);
@@ -100,7 +100,7 @@ namespace Congroo.Core
             mEventArgPool.Free(rEventArg);
         }
 
-        public void Trigger(int nMsgCode, object rArg1, object rArg2, object rArg3, object rArg4)
+        public void Trigger(uint nMsgCode, object rArg1, object rArg2, object rArg3, object rArg4)
         {
             EventArg rEventArg = mEventArgPool.Allocate();
             rEventArg.SetParams(rArg1, rArg2, rArg3, rArg4);
@@ -108,7 +108,7 @@ namespace Congroo.Core
             mEventArgPool.Free(rEventArg);
         }
 
-        public void Trigger(int nMsgCode, object rArg1, object rArg2, object rArg3, object rArg4, object rArg5)
+        public void Trigger(uint nMsgCode, object rArg1, object rArg2, object rArg3, object rArg4, object rArg5)
         {
             EventArg rEventArg = mEventArgPool.Allocate();
             rEventArg.SetParams(rArg1, rArg2, rArg3, rArg4, rArg5);
@@ -116,7 +116,7 @@ namespace Congroo.Core
             mEventArgPool.Free(rEventArg);
         }
 
-        public void Trigger(int nMsgCode, object rArg1, object rArg2, object rArg3, object rArg4, object rArg5, object rArg6)
+        public void Trigger(uint nMsgCode, object rArg1, object rArg2, object rArg3, object rArg4, object rArg5, object rArg6)
         {
             EventArg rEventArg = mEventArgPool.Allocate();
             rEventArg.SetParams(rArg1, rArg2, rArg3, rArg4, rArg5, rArg6);
@@ -124,7 +124,7 @@ namespace Congroo.Core
             mEventArgPool.Free(rEventArg);
         }
 
-        public void Trigger(int nMsgCode, object rArg1, object rArg2, object rArg3, object rArg4, object rArg5, object rArg6, object rArg7)
+        public void Trigger(uint nMsgCode, object rArg1, object rArg2, object rArg3, object rArg4, object rArg5, object rArg6, object rArg7)
         {
             EventArg rEventArg = mEventArgPool.Allocate();
             rEventArg.SetParams(rArg1, rArg2, rArg3, rArg4, rArg5, rArg6, rArg7);
@@ -132,7 +132,7 @@ namespace Congroo.Core
             mEventArgPool.Free(rEventArg);
         }
 
-        public void Trigger(int nMsgCode, object rArg1, object rArg2, object rArg3, object rArg4, object rArg5, object rArg6, object rArg7, object rArg8)
+        public void Trigger(uint nMsgCode, object rArg1, object rArg2, object rArg3, object rArg4, object rArg5, object rArg6, object rArg7, object rArg8)
         {
             EventArg rEventArg = mEventArgPool.Allocate();
             rEventArg.SetParams(rArg1, rArg2, rArg3, rArg4, rArg5, rArg6, rArg7, rArg8);
@@ -141,11 +141,11 @@ namespace Congroo.Core
         }
 
 
-        public void TriggerArg(int nMsgCode, EventArg rEventArg)
+        public void TriggerArg(uint nMsgCode, EventArg rEventArg)
         {
-            if(Events.TryGetValue(nMsgCode, out Event evt))
+            if (Events.TryGetValue(nMsgCode, out Event evt))
             {
-                if(evt.ListenerActions != null)
+                if (evt.ListenerActions != null)
                 {
                     foreach (var item in evt.ListenerActions)
                     {
@@ -156,9 +156,66 @@ namespace Congroo.Core
         }
 
 
-        public bool Contains(int nMsgCode)
+        public bool Contains(uint nMsgCode)
         {
             return Events.ContainsKey(nMsgCode);
         }
+
+
+        public void BindEventWrappers(List<EventWrapper> eventWrappers)
+        {
+            if (eventWrappers != null)
+            {
+                foreach (EventWrapper eWrapper in eventWrappers)
+                {
+                    Binding(eWrapper.EventCode, eWrapper.EventHandler);
+                }
+            }
+        }
+
+
+        public void UnbindEventWrappers(List<EventWrapper> eventWrappers)
+        {
+            if (eventWrappers != null)
+            {
+                foreach (EventWrapper eWrapper in eventWrappers)
+                {
+                    Unbinding(eWrapper.EventCode, eWrapper.EventHandler);
+                }
+            }
+        }
+
+        public static List<EventWrapper> GetTypeEvents(object instance)
+        {
+            Type type = instance.GetType();
+            List<EventWrapper> eventWrappers = null;
+            BindingFlags bindingFlags = BindingFlags.InvokeMethod | BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic;
+            MethodInfo[] methodInfos = type.GetMethods(bindingFlags);
+            foreach (MethodInfo methodInfo in methodInfos)
+            {
+                object[] items = methodInfo.GetCustomAttributes(typeof(EventAttribute), false);
+                if (items != null && items.Length > 0)
+                {
+                    EventAttribute eventAttr = (EventAttribute)items[0];
+                    if (eventAttr != null)
+                    {
+                        Action<EventArg> rActionDelegate = (args) => { methodInfo.Invoke(instance, new object[] { args }); };
+                        EventWrapper eWrapper = new EventWrapper()
+                        {
+                            EventCode = eventAttr.EventId,
+                            EventHandler = rActionDelegate
+                        };
+
+                        if (eventWrappers == null)
+                        {
+                            eventWrappers = new List<EventWrapper>();
+                        }
+                        eventWrappers.Add(eWrapper);
+                    }
+                }
+            }
+            return eventWrappers;
+        }
+
     }
 }

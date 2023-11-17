@@ -1,10 +1,12 @@
+using System;
+
 namespace Congroo.Core
 {
-    
+    [AttributeUsage(AttributeTargets.Method)]
     public class EventAttribute : System.Attribute
     {
-        public ulong EventId;
-        public EventAttribute(ulong nEventId)
+        public uint EventId;
+        public EventAttribute(uint nEventId)
         {
             EventId = nEventId;
         }

@@ -1,10 +1,7 @@
-﻿//======================================================================
-//        Copyright (C) 2015-2020 Winddy He. All rights reserved
-//        Email: hgplan@126.com
-//======================================================================
-using UnityEngine;
+﻿using UnityEngine;
 using System.Collections;
 using System;
+using System.Threading;
 
 namespace Congroo.Core
 {
@@ -29,26 +26,53 @@ namespace Congroo.Core
             }
         }
 
-        public CoroutineHandler StartHandler(IEnumerator rIEnum)
-        {
-            CoroutineHandler rHandler = new CoroutineHandler(rIEnum);
-            this.mCoroutineMono.StartCoroutine(rIEnum);
-            return rHandler;
-        }
+
 
         public Coroutine Start(IEnumerator rIEnum)
         {
             return this.mCoroutineMono.StartCoroutine(rIEnum);
         }
 
-        public void Stop(CoroutineHandler rCoroutineHandler)
-        {
-            if (rCoroutineHandler != null)
-                this.mCoroutineMono.StopCoroutine(rCoroutineHandler.IEnum);
-        }
+
         public void Stop(Coroutine rCoroutine)
         {
             this.mCoroutineMono.StopCoroutine(rCoroutine);
+        }
+
+
+        public Coroutine StartCoroutine(IEnumerator enumerator, CancellationToken cancellationToken)
+        {
+            Coroutine ret = null;
+            if (enumerator != null && cancellationToken != null)
+            {
+                ret = mCoroutineMono.StartCoroutine(enumerator);
+                cancellationToken.Register(() =>
+                {
+                    StopCoroutine(ret);
+                });
+            }
+            return ret;
+        }
+
+        public void StopCoroutine(Coroutine coroutine)
+        {
+            if (coroutine != null && mCoroutineMono != null)
+            {
+                mCoroutineMono.StopCoroutine(coroutine);
+            }
+        }
+
+
+        public void WaitFrameCallBack(Action action, CancellationToken cancellationToken, int frameCount = 1)
+        {
+            StartCoroutine(_WaitFrameCallBack(action, frameCount), cancellationToken);
+        }
+
+
+        private IEnumerator _WaitFrameCallBack(Action action, int frameCount)
+        {
+            yield return frameCount;
+            action?.Invoke();
         }
     }
 }
