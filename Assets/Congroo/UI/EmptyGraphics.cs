@@ -3,11 +3,13 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-
-public class EmptyGraphics : Graphic
+namespace Congroo.UI
 {
-    protected override void OnPopulateMesh(VertexHelper vh)
+    public class EmptyGraphics : Graphic
     {
-        vh.Clear();
+        protected override void OnPopulateMesh(VertexHelper vh)
+        {
+            vh.Clear();
+        }
     }
 }

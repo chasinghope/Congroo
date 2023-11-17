@@ -13,17 +13,17 @@ namespace Congroo.Core
 
         public virtual void Awake()
         {
-            mEventWrappers = EventManager.GetTypeEvents(this);
+            mEventWrappers = EventCenter.GetTypeEvents(this);
         }
 
         public virtual void OnEnable()
         {
-            EventManager.Instance.BindEventWrappers(mEventWrappers);
+            EventCenter.Instance.BindEventWrappers(mEventWrappers);
         }
 
         public virtual void OnDisable()
         {
-            EventManager.Instance.UnbindEventWrappers(mEventWrappers);
+            EventCenter.Instance.UnbindEventWrappers(mEventWrappers);
         }
 
         #endregion
