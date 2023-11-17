@@ -11,6 +11,7 @@ namespace Congroo.Core
         CongrooEditor,
         Diagnost,
         Temp,
+        UI,
     }
 
     internal class LogCustomData
