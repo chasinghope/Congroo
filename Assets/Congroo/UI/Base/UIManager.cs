@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
+using UnityEngine.ResourceManagement.AsyncOperations;
 
 public enum UIType
 {
@@ -62,7 +63,7 @@ public class UIManager : SingletonMono<UIManager>
 
             go.transform.SetAsLastSibling();
 
-            uiBase.OnPreLoad();
+            uiBase.Init();
 
             go.SetActive(false);
         }
@@ -73,7 +74,17 @@ public class UIManager : SingletonMono<UIManager>
         string path = GetAddressablePath(rUName);
         CLog.L(LType.UI, $"SpawnUI<T> {path}");
 
-        GameObject prefab = await ResMgr.Instance.LoadAsset<GameObject>(path);
+        var op = ResMgr.Instance.LoadAssetAsync<GameObject>(path);
+        await op.Task;
+        GameObject prefab = null;
+        if(op.Status == AsyncOperationStatus.Succeeded)
+        {
+            prefab = op.Result;
+        }
+        else
+        {
+            CLog.LE(LType.UI, "Failed to load ui prefab");
+        }
         GameObject go = GameObject.Instantiate(prefab, Vector3.zero, Quaternion.identity);
         go.transform.localScale = Vector3.one;
         T uiBase = go.GetComponent<UIBase>() as T;
@@ -126,7 +137,7 @@ public class UIManager : SingletonMono<UIManager>
             {
                 GameObject.Destroy(uiBase.gameObject);
                 this.Page_LoadedDict.Remove(rUName);
-                AssetLoaderManager.Instance.ReleaseInstance(uiBase.gameObject);
+                ResMgr.Instance.ReleaseAsset(uiBase.gameObject);
             }
         }
     }
@@ -141,7 +152,7 @@ public class UIManager : SingletonMono<UIManager>
             {
                 GameObject.Destroy(uiBase.gameObject);
                 this.Popup_LoadedDict.Remove(rUName);
-                AssetLoaderManager.Instance.ReleaseInstance(uiBase.gameObject);
+                ResMgr.Instance.ReleaseAsset(uiBase.gameObject);
             }
         }
     }

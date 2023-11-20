@@ -36,7 +36,7 @@ namespace Congroo.Core
 
         #region Addressable
 
-        public T LoadAsset<T>(string key, CancellationToken cancellationToken) where T : UnityEngine.Object
+        public T LoadAsset<T>(string key, CancellationToken cancellationToken = default) where T : UnityEngine.Object
         {
             AsyncOperationHandle<T> op = Addressables.LoadAssetAsync<T>(key);
             cancellationToken.Register(() => 
@@ -47,10 +47,23 @@ namespace Congroo.Core
             return op.Result;
         }
 
+        public AsyncOperationHandle<T> LoadAssetAsync<T>(string key) where T : UnityEngine.Object
+        {
+            AsyncOperationHandle<T> op = Addressables.LoadAssetAsync<T>(key);
+            return op;
+        }
+
+        public void ReleaseAsset<T>(T obj)
+        {
+            Addressables.Release(obj);
+        }
+
+
         public void Relase<T>(AsyncOperationHandle<T> handle)
         {
             Addressables.Release(handle);
         }
+
 
         #endregion
 

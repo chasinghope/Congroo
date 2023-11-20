@@ -20,13 +20,17 @@ public abstract class UIBase : MonoBehaviour
 
     [ReadOnly] public UIStatus UIStatus = UIStatus.Close;
 
-    public virtual void OnPreLoad()
+    protected List<EventWrapper> mEventWrappers; 
+
+    public void Init()
     {
         IsNeedCache = true;
         this.gameObject.SetActive(false);
+
+        mEventWrappers = EventCenter.GetTypeEvents(this);
     }
 
-    public virtual void Open()
+    public void Open()
     {
         if (UIStatus == UIStatus.Open)
             return;
@@ -35,9 +39,10 @@ public abstract class UIBase : MonoBehaviour
 
         this.OnOpen();
         this.gameObject.SetActive(true);
+        EventCenter.Instance.BindEventWrappers(mEventWrappers);
     }
 
-    public virtual void Close()
+    public void Close()
     {
         if (UIStatus == UIStatus.Close)
             return;
@@ -45,13 +50,8 @@ public abstract class UIBase : MonoBehaviour
 
         this.OnClose();
         this.gameObject.SetActive(false);
+        EventCenter.Instance.UnbindEventWrappers(mEventWrappers);
     }
-
-    public virtual void OnRelease()
-    {
-
-    }
-
 
     protected virtual void OnOpen()
     {
