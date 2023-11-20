@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 using Congroo.Core;
+using System.IO;
 
 public class EditorTestWindow : EditorWindow
 {
@@ -25,4 +26,14 @@ public class EditorTestWindow : EditorWindow
             CLog.L(LType.Temp, "²âÊÔ4");
         }
     }
+
+
+    [MenuItem("Congroo/´ò¿ªÅäÖÃÄ¿Â¼")]
+    private static void OpenDataTableForlder()
+    {
+        string projectRootFolder = new DirectoryInfo(Application.dataPath).Parent.Parent.FullName;
+        string path = Path.Combine(projectRootFolder, "cfgs", "Datas");
+        Application.OpenURL(path);
+    }
+
 }
