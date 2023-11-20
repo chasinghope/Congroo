@@ -1,0 +1,76 @@
+[
+  {
+    "Id": 10001,
+    "Name": "草丛",
+    "Hp": [
+      3
+    ],
+    "MaxCount": 30,
+    "RefreshInv": 30,
+    "GenerateItem": 0
+  },
+  {
+    "Id": 10002,
+    "Name": "花",
+    "Hp": [
+      5
+    ],
+    "MaxCount": 5,
+    "RefreshInv": 50,
+    "GenerateItem": 0
+  },
+  {
+    "Id": 10003,
+    "Name": "云",
+    "Hp": [],
+    "MaxCount": 2,
+    "RefreshInv": 15,
+    "GenerateItem": 180
+  },
+  {
+    "Id": 10004,
+    "Name": "雨云",
+    "Hp": [],
+    "MaxCount": 1,
+    "RefreshInv": 120,
+    "GenerateItem": 0
+  },
+  {
+    "Id": 10005,
+    "Name": "雷雨云",
+    "Hp": [],
+    "MaxCount": 1,
+    "RefreshInv": 300,
+    "GenerateItem": 30
+  },
+  {
+    "Id": 10006,
+    "Name": "水坑",
+    "Hp": [
+      5
+    ],
+    "MaxCount": 10,
+    "RefreshInv": 60,
+    "GenerateItem": 0
+  },
+  {
+    "Id": 10007,
+    "Name": "圣女果",
+    "Hp": [
+      15
+    ],
+    "MaxCount": 6,
+    "RefreshInv": 20,
+    "GenerateItem": 0
+  },
+  {
+    "Id": 10008,
+    "Name": "毒蘑菇",
+    "Hp": [
+      5
+    ],
+    "MaxCount": 3,
+    "RefreshInv": 60,
+    "GenerateItem": 0
+  }
+]

@@ -31,8 +31,8 @@ public class EditorTestWindow : EditorWindow
     [MenuItem("Congroo/´ò¿ªÅäÖÃÄ¿Â¼")]
     private static void OpenDataTableForlder()
     {
-        string projectRootFolder = new DirectoryInfo(Application.dataPath).Parent.Parent.FullName;
-        string path = Path.Combine(projectRootFolder, "cfgs", "Datas");
+        string projectRootFolder = new DirectoryInfo(Application.dataPath).Parent.FullName;
+        string path = Path.Combine(projectRootFolder, "LuBan/cfgs", "Datas");
         Application.OpenURL(path);
     }
 
