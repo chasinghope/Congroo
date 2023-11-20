@@ -13,6 +13,11 @@ namespace Congroo.Core
     /// </summary>
     public sealed class ResMgr : Singleton<ResMgr>
     {
+        private ResMgr()
+        {
+            
+        }
+
 
         #region Resource
 

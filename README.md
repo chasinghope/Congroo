@@ -25,6 +25,12 @@ Unity 简易框架用于开发独立单机游戏
 
 ## Congroo.ThirdLib
 
-1. 扩展unity异步代码接口
+[GitHub - dbrizov/NaughtyAttributes: Attribute Extensions for Unity](https://github.com/dbrizov/NaughtyAttributes)
 
-https://github.com/Arvtesh/UnityFx.Async
+https://github.com/focus-creative-games/luban
+
+[Addressables | Addressables | 1.19.19 (unity3d.com)](https://docs.unity3d.com/Packages/com.unity.addressables@1.19/manual/index.html)
+
+https://github.com/Inspiaaa/UnityHFSM.git#upm
+
+https://github.com/Cysharp/UniTask

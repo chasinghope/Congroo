@@ -6,6 +6,11 @@ namespace Congroo.Core
 {
     public partial class DataModelMgr : Singleton<DataModelMgr>
     {
+        private DataModelMgr()
+        {
+             
+        }
+
         private List<DataModelBase> mDataModelList = new List<DataModelBase>();
 
         public void Initialize()
