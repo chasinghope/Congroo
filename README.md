@@ -37,3 +37,7 @@ https://github.com/focus-creative-games/luban
 https://github.com/Inspiaaa/UnityHFSM.git#upm
 
 https://github.com/Cysharp/UniTask
+
+https://openupm.com/packages/jp.setchi.fancyscrollview/#close
+
+https://openupm.com/packages/com.alelievr.node-graph-processor/
