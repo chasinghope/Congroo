@@ -20,7 +20,7 @@
 - 红点系统
 - 集成导表工具 LuBan
 
-
+- 集成HybirdCLR热更新功能
 
 
 
@@ -41,3 +41,5 @@ https://github.com/Cysharp/UniTask
 https://openupm.com/packages/jp.setchi.fancyscrollview/#close
 
 https://openupm.com/packages/com.alelievr.node-graph-processor/
+
+https://github.com/JamesNK/Newtonsoft.Json

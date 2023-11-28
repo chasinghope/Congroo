@@ -6,7 +6,7 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Scenes/Test.unity
-    guid: 2cda990e2423bbf4892e6590ba056729
+    path: Assets/Congroo.Demo/HotUpdateDemo/Demo_HotUpdateSplash.unity
+    guid: 6ee74fd5684e0c14594e0f1bd5b40ab3
   m_configObjects:
     com.unity.addressableassets: {fileID: 11400000, guid: ca97666502c6c354ea9399ca672cfde5, type: 2}

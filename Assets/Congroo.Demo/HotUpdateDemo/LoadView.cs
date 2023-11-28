@@ -1,9 +1,7 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UI;
+using Congroo.Core;
+using Cysharp.Threading.Tasks;
 
 public class LoadView : MonoBehaviour
 {
@@ -28,20 +26,19 @@ public class LoadView : MonoBehaviour
 
     private void OnEnable()
     {
-        HotUpdateManager.Instance.EDownloadProgress += EDownloadProgress;
-        HotUpdateManager.Instance.OnHotUpdateFinished += OnHotUpdateFinished;
-        HotUpdateManager.Instance.ENeedDownHotUpdateAssets += OnENeedDownHotUpdateAssets;
+        hotUpdateManager.EDownloadProgress += EDownloadProgress;
+        hotUpdateManager.OnHotUpdateFinished += OnHotUpdateFinished;
+        hotUpdateManager.ENeedDownHotUpdateAssets += OnENeedDownHotUpdateAssets;
     }
 
 
     private void OnDisable()
     {
-        if(HotUpdateManager.Instance != null)
+        if(hotUpdateManager != null)
         {
-
-            HotUpdateManager.Instance.EDownloadProgress -= EDownloadProgress;
-            HotUpdateManager.Instance.OnHotUpdateFinished -= OnHotUpdateFinished;
-            HotUpdateManager.Instance.ENeedDownHotUpdateAssets -= OnENeedDownHotUpdateAssets;
+            hotUpdateManager.EDownloadProgress -= EDownloadProgress;
+            hotUpdateManager.OnHotUpdateFinished -= OnHotUpdateFinished;
+            hotUpdateManager.ENeedDownHotUpdateAssets -= OnENeedDownHotUpdateAssets;
         }
     }
 
@@ -72,7 +69,7 @@ public class LoadView : MonoBehaviour
     {
         loadPanel.SetActive(false);
         //StartCoroutine(StartGame());
-
+        _ = StartGame();
     }
 
     private void BtnDownload_OnClick()
@@ -82,13 +79,11 @@ public class LoadView : MonoBehaviour
     }
 
 
-    private IEnumerator StartGame()
+    private async UniTask StartGame()
     {
-        yield return null;
-        yield return null;
-        yield return null;
-        yield return null;
-        yield return null;
-
+        CLog.L(LType.HotUpdate, $"StartGame");
+        await UniTask.Yield();
+        GameObject go = await ResMgr.Instance.LoadAssetAsync<GameObject>("Prefabs/Bee_01.prefab");
+        Instantiate(go);
     }
 }

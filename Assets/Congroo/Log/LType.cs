@@ -7,11 +7,13 @@ namespace Congroo.Core
     public enum LType
     {
         Normal,
+        HotUpdate,
         Congroo,
         CongrooEditor,
         Diagnost,
         Temp,
         UI,
+
     }
 
     internal class LogCustomData

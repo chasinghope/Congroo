@@ -1,7 +1,6 @@
+using Cysharp.Threading.Tasks;
 using System;
 using System.Threading;
-using System.Threading.Tasks;
-using Unity.VisualScripting.Antlr3.Runtime;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
@@ -26,13 +25,9 @@ namespace Congroo.Core
             return Resources.Load<T>(resName);
         }
 
-        public async Task LoadAsyncFromResources<T>(string resName, Action<T> cb = null) where T : UnityEngine.Object
+        public async UniTask LoadAsyncFromResources<T>(string resName, Action<T> cb = null) where T : UnityEngine.Object
         {
-            ResourceRequest request = Resources.LoadAsync<T>(resName);   
-            while(!request.isDone)
-            {
-                await Task.Yield();
-            }
+            await Resources.LoadAsync(resName);
         }
 
 
