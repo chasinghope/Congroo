@@ -16,25 +16,25 @@ namespace Congroo.Core
 
         };
 
-        [System.Diagnostics.Conditional("UNITY_EDITOR")]
+        [System.Diagnostics.Conditional("CLOG_L")]
         public static void L(LType rType, object rObj)
         {
             if (LogCusomtConfigDict[rType].IsFilter) return;
             Debug.Log($"{LogCusomtConfigDict[rType]}  {rObj}");   
         }
 
-        [System.Diagnostics.Conditional("UNITY_EDITOR")]
+        [System.Diagnostics.Conditional("CLOG_W")]
         public static void LW(LType rType, object rObj)
         {
             if (LogCusomtConfigDict[rType].IsFilter) return;
-            Debug.Log($"{LogCusomtConfigDict[rType]}  {rObj}");
+            Debug.LogWarning($"{LogCusomtConfigDict[rType]}  {rObj}");
         }
 
-        [System.Diagnostics.Conditional("UNITY_EDITOR")]
+        [System.Diagnostics.Conditional("CLOG_E")]
         public static void LE(LType rType, object rObj)
         {
             if (LogCusomtConfigDict[rType].IsFilter) return;
-            Debug.Log($"{LogCusomtConfigDict[rType]}  {rObj}");
+            Debug.LogError($"{LogCusomtConfigDict[rType]}  {rObj}");
         }
     }
 }

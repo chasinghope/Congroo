@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 0a7c9535f7632e7489e6a35da8180cf5
+guid: bd4a01cc8bedd904ba946e8169cd1deb
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -42,7 +42,7 @@ TextureImporter:
   nPOTScale: 0
   lightmap: 0
   compressionQuality: 50
-  spriteMode: 2
+  spriteMode: 1
   spriteExtrude: 1
   spriteMeshType: 1
   alignment: 0
@@ -115,70 +115,7 @@ TextureImporter:
     forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
-    sprites:
-    - serializedVersion: 2
-      name: PC Computer - Hollow Knight - Aspid Mother_0
-      rect:
-        serializedVersion: 2
-        x: 337
-        y: 1596
-        width: 164
-        height: 195
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 0fff9203ee08a904e93eb0f7a7d67477
-      internalID: 1575162754
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: PC Computer - Hollow Knight - Aspid Mother_1
-      rect:
-        serializedVersion: 2
-        x: 3
-        y: 1596
-        width: 164
-        height: 195
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: dbdba530d62bc0c419a4149da75d6ce6
-      internalID: 435409023
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: PC Computer - Hollow Knight - Aspid Mother_2
-      rect:
-        serializedVersion: 2
-        x: 170
-        y: 1596
-        width: 164
-        height: 195
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: b004cbf140c22334795a9bd7e48bcbb6
-      internalID: -1839414948
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
+    sprites: []
     outline: []
     physicsShape: []
     bones: []
@@ -189,22 +126,7 @@ TextureImporter:
     edges: []
     weights: []
     secondaryTextures: []
-    nameFileIdTable:
-      PC Computer - Hollow Knight - Aspid Mother_0: 1575162754
-      PC Computer - Hollow Knight - Aspid Mother_1: 435409023
-      PC Computer - Hollow Knight - Aspid Mother_10: 450211772
-      PC Computer - Hollow Knight - Aspid Mother_11: -1693426794
-      PC Computer - Hollow Knight - Aspid Mother_12: -380397016
-      PC Computer - Hollow Knight - Aspid Mother_13: -1918985719
-      PC Computer - Hollow Knight - Aspid Mother_14: 737664665
-      PC Computer - Hollow Knight - Aspid Mother_2: -1839414948
-      PC Computer - Hollow Knight - Aspid Mother_3: 1776693677
-      PC Computer - Hollow Knight - Aspid Mother_4: -2090821199
-      PC Computer - Hollow Knight - Aspid Mother_5: -374913947
-      PC Computer - Hollow Knight - Aspid Mother_6: -1542683408
-      PC Computer - Hollow Knight - Aspid Mother_7: -75815985
-      PC Computer - Hollow Knight - Aspid Mother_8: 1538613625
-      PC Computer - Hollow Knight - Aspid Mother_9: -93067211
+    nameFileIdTable: {}
   spritePackingTag: 
   pSDRemoveMatte: 0
   pSDShowRemoveMatteOption: 0

@@ -49,14 +49,15 @@ public class HotUpdateManager : SingletonMono<HotUpdateManager>
             throw new System.Exception($"Addressables.CheckForCatalogUpdates Failed : {catlogUpdatesOp.Status}");
         }
         updateKeys = catlogUpdatesOp.Result;
+        Addressables.Release(catlogUpdatesOp);
 
-
+        CLog.L(LType.HotUpdate, $"HotUpdate --- updateKeys count : {updateKeys.Count}");
         if (updateKeys.Count <= 0)
         {
             HotUpdateFinished();
             return;
         }
-        Addressables.Release(catlogUpdatesOp);
+
 
         // check res update size
         CLog.L(LType.HotUpdate, $"HotUpdate --- check res update size");
@@ -134,7 +135,7 @@ public class HotUpdateManager : SingletonMono<HotUpdateManager>
     /// </summary>
     private async void HotUpdateCodesLoad()
     {
-#if UNITY_EDITOR
+#if !UNITY_EDITOR
         //Assembly hotUpdates = Assembly.Load(File.ReadAllBytes($"{Application.streamingAssetsPath}/HotUpdate.dll.bytes"));
 
         var loadDllOp = Addressables.LoadAssetAsync<TextAsset>("Assets/Res/BundleRes/Codes/HotUpdate.dll.bytes");
