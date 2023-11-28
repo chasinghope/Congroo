@@ -7,10 +7,7 @@ using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.AddressableAssets.ResourceLocators;
 using UnityEngine.ResourceManagement.AsyncOperations;
-using static UnityEngine.AddressableAssets.Addressables;
 using Congroo.Core;
-using Cysharp.Threading.Tasks;
-
 public class HotUpdateManager : SingletonMono<HotUpdateManager>
 {
     List<string> updateKeys;
@@ -106,7 +103,7 @@ public class HotUpdateManager : SingletonMono<HotUpdateManager>
         {
             var item = updateCatlogKeys[i];
             var size = updateContentSize[i];
-            AsyncOperationHandle asyncOperationHandle = Addressables.DownloadDependenciesAsync(item.Keys, MergeMode.Union, false);
+            AsyncOperationHandle asyncOperationHandle = Addressables.DownloadDependenciesAsync(item.Keys, Addressables.MergeMode.Union, false);
             while (!asyncOperationHandle.IsDone)
             {
                 float percentage = asyncOperationHandle.GetDownloadStatus().Percent;
