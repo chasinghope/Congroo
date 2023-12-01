@@ -46,3 +46,9 @@ https://openupm.com/packages/jp.setchi.fancyscrollview/#close
 https://openupm.com/packages/com.alelievr.node-graph-processor/
 
 https://github.com/JamesNK/Newtonsoft.Json
+
+
+
+## Optional
+
+https://github.com/psygames/UnityWebSocket

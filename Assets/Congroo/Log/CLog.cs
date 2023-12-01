@@ -8,6 +8,7 @@ namespace Congroo.Core
         private static Dictionary<LType, LogCustomData> LogCusomtConfigDict = new Dictionary<LType, LogCustomData>()
         {
             { LType.Normal,         new LogCustomData(false, LType.Normal,          "Normal",           Color.white) },
+            { LType.WebSocket,      new LogCustomData(false, LType.WebSocket,          "WebSocket",           Color.clear) },
             { LType.HotUpdate,      new LogCustomData(false, LType.HotUpdate,       "HotUpdate",        Color.yellow)},
             { LType.Congroo,        new LogCustomData(false, LType.Congroo,         "Congroo",          Color.green) },
             { LType.CongrooEditor,  new LogCustomData(false, LType.CongrooEditor,   "CongrooEditor",    Color.yellow)},

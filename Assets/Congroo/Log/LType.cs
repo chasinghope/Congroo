@@ -14,9 +14,11 @@ namespace Congroo.Core
         Temp,
         UI,
 
+        WebSocket,
+
     }
 
-    internal class LogCustomData
+    public class LogCustomData
     {
         public bool IsFilter = false;
         public LType Type;
