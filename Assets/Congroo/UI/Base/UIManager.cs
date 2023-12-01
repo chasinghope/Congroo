@@ -83,7 +83,7 @@ public class UIManager : SingletonMono<UIManager>
         }
         else
         {
-            CLog.LE(LType.UI, "Failed to load ui prefab");
+            CLog.E(LType.UI, "Failed to load ui prefab");
         }
         GameObject go = GameObject.Instantiate(prefab, Vector3.zero, Quaternion.identity);
         go.transform.localScale = Vector3.one;

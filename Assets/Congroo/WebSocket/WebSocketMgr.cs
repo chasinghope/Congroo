@@ -46,13 +46,13 @@ namespace Congroo.Core
 				OnReceiveData?.Invoke(code, string.Empty);
 				return;
 			}
-			CLog.LW(LType.WebSocket, $"S--********-->C msgcode:{code}->{msgCode}\tmsgBody:{msgBody}");
+			CLog.W(LType.WebSocket, $"S--********-->C msgcode:{code}->{msgCode}\tmsgBody:{msgBody}");
 
 			//网络回包包体
 			var s_cBody = UnityEngine.JsonUtility.FromJson<WebSocketBody>(msgBody);
 			if (s_cBody.err_code != 200)
 			{
-				CLog.LW(LType.WebSocket, s_cBody.err_msg);
+				CLog.W(LType.WebSocket, s_cBody.err_msg);
                 return;
             }
 
@@ -61,7 +61,7 @@ namespace Congroo.Core
 
 		public override void OnErrorHandle(object sender, ErrorEventArgs e)
 		{
-			CLog.LE(LType.WebSocket, e.ToString());
+			CLog.E(LType.WebSocket, e.ToString());
 			if (State == WebSocketState.Closing || State == WebSocketState.Closed)
 			{
 				return;
@@ -71,7 +71,7 @@ namespace Congroo.Core
 
 		public override void OnCloseHandle(object sender, CloseEventArgs e)
 		{
-			CLog.LW(LType.WebSocket, "手动关闭Socket返回...");
+			CLog.W(LType.WebSocket, "手动关闭Socket返回...");
 		}
 
 		//public void OnInit()
@@ -138,7 +138,7 @@ namespace Congroo.Core
 			Buffer.BlockCopy(msgBodyBytes, 0, sendBuffer, 4, msgBodyBytes.Length);
 			if (msgCode != 1)
 			{
-				CLog.LW(LType.WebSocket, $"C--->S msgcode:{code}->{msgCode}\tmsgBody:{msgBody}");
+				CLog.W(LType.WebSocket, $"C--->S msgcode:{code}->{msgCode}\tmsgBody:{msgBody}");
 			}
 			SendMsg(sendBuffer);
 		}

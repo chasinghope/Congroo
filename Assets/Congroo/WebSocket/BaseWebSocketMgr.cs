@@ -49,7 +49,7 @@ namespace Congroo.Core
                 mSocket.OnClose += OnClose;
                 mSocket.OnError += OnError;
                 mSocket.ConnectAsync();
-                CLog.LW(LType.WebSocket, "WebSocket on connecting...");
+                CLog.W(LType.WebSocket, "WebSocket on connecting...");
             }
         }
 
@@ -67,13 +67,13 @@ namespace Congroo.Core
 
         private void OnError(object sender, ErrorEventArgs e)
         {
-            CLog.LE(LType.WebSocket, $"错误\t原因:{e.Message}");
+            CLog.E(LType.WebSocket, $"错误\t原因:{e.Message}");
             OnErrorHandle(sender, e);
         }
 
         private void OnClose(object sender, CloseEventArgs e)
         {
-            CLog.LW(LType.WebSocket, $"关闭连接\tcode:{e.Code}\t原因:{e.Reason}");
+            CLog.W(LType.WebSocket, $"关闭连接\tcode:{e.Code}\t原因:{e.Reason}");
             OnCloseHandle(sender, e);
         }
 
@@ -84,7 +84,7 @@ namespace Congroo.Core
 
         private void OnOpen(object sender, OpenEventArgs e)
         {
-            CLog.LW(LType.WebSocket, "连接成功!!!");
+            CLog.W(LType.WebSocket, "连接成功!!!");
             OnOpenHandle(sender, e);
         }
 
