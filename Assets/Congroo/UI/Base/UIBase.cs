@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using Congroo.Core;
 using NaughtyAttributes;
+using System;
+using UnityEngine.ResourceManagement.AsyncOperations;
 
 public enum UIStatus
 {
@@ -16,11 +18,13 @@ public abstract class UIBase : MonoBehaviour
     public virtual bool IsNeedCache { get; protected set; } = false;
     public virtual UIType UType { get; protected set; }
 
-    [ReadOnly] public string UName;
+    [NonSerialized] public string UName;
 
     [ReadOnly] public UIStatus UIStatus = UIStatus.Close;
 
     protected List<EventWrapper> mEventWrappers; 
+
+    public AsyncOperationHandle<GameObject> Asset { get; set; }
 
     public void Init()
     {
@@ -28,6 +32,8 @@ public abstract class UIBase : MonoBehaviour
         this.gameObject.SetActive(false);
 
         mEventWrappers = EventCenter.GetTypeEvents(this);
+
+        OnInit();
     }
 
     public void Open()
@@ -51,6 +57,11 @@ public abstract class UIBase : MonoBehaviour
         this.OnClose();
         this.gameObject.SetActive(false);
         EventCenter.Instance.UnbindEventWrappers(mEventWrappers);
+    }
+
+    protected virtual void OnInit()
+    {
+
     }
 
     protected virtual void OnOpen()
