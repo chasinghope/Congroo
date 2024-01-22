@@ -72,5 +72,15 @@
     "MaxCount": 3,
     "RefreshInv": 60,
     "GenerateItem": 0
+  },
+  {
+    "Id": 10009,
+    "Name": "哈哈怪",
+    "Hp": [
+      1
+    ],
+    "MaxCount": 1,
+    "RefreshInv": 10,
+    "GenerateItem": 2
   }
 ]

@@ -7,62 +7,37 @@
 //------------------------------------------------------------------------------
 using Bright.Serialization;
 using System.Collections.Generic;
-using SimpleJSON;
-
 
 
 namespace cfg.Battle
-{ 
-
+{
 public sealed partial class GLConst :  Bright.Config.BeanBase 
 {
-    public GLConst(JSONNode _json) 
+    public GLConst(ByteBuf _buf) 
     {
-        { if(!_json["MaxPlayerCount"].IsNumber) { throw new SerializationException(); }  MaxPlayerCount = _json["MaxPlayerCount"]; }
-        { if(!_json["SheepNormalSpeed"].IsNumber) { throw new SerializationException(); }  SheepNormalSpeed = _json["SheepNormalSpeed"]; }
-        { if(!_json["SheepUpSpeed"].IsNumber) { throw new SerializationException(); }  SheepUpSpeed = _json["SheepUpSpeed"]; }
-        { if(!_json["SheepFlySpeed"].IsNumber) { throw new SerializationException(); }  SheepFlySpeed = _json["SheepFlySpeed"]; }
-        { if(!_json["WhiteCloudSpeed"].IsNumber) { throw new SerializationException(); }  WhiteCloudSpeed = _json["WhiteCloudSpeed"]; }
-        { if(!_json["RainCloudSpeed"].IsNumber) { throw new SerializationException(); }  RainCloudSpeed = _json["RainCloudSpeed"]; }
-        { if(!_json["ThunderCloudSpeed"].IsNumber) { throw new SerializationException(); }  ThunderCloudSpeed = _json["ThunderCloudSpeed"]; }
-        { if(!_json["FlashIntervalTime"].IsNumber) { throw new SerializationException(); }  FlashIntervalTime = _json["FlashIntervalTime"]; }
-        { if(!_json["SuperGift1Count"].IsNumber) { throw new SerializationException(); }  SuperGift1Count = _json["SuperGift1Count"]; }
-        { if(!_json["SuperGift2Count"].IsNumber) { throw new SerializationException(); }  SuperGift2Count = _json["SuperGift2Count"]; }
-        { if(!_json["SuperGift3Count"].IsNumber) { throw new SerializationException(); }  SuperGift3Count = _json["SuperGift3Count"]; }
-        { if(!_json["SuperGift4Count"].IsNumber) { throw new SerializationException(); }  SuperGift4Count = _json["SuperGift4Count"]; }
-        { if(!_json["SuperGift5Count"].IsNumber) { throw new SerializationException(); }  SuperGift5Count = _json["SuperGift5Count"]; }
-        { if(!_json["SuperGift6Count"].IsNumber) { throw new SerializationException(); }  SuperGift6Count = _json["SuperGift6Count"]; }
-        { if(!_json["PerMaxLittleSheepCount"].IsNumber) { throw new SerializationException(); }  PerMaxLittleSheepCount = _json["PerMaxLittleSheepCount"]; }
-        { if(!_json["VertigoBossTime"].IsNumber) { throw new SerializationException(); }  VertigoBossTime = _json["VertigoBossTime"]; }
-        { if(!_json["VertigoSheepTime"].IsNumber) { throw new SerializationException(); }  VertigoSheepTime = _json["VertigoSheepTime"]; }
+        MaxPlayerCount = _buf.ReadInt();
+        SheepNormalSpeed = _buf.ReadFloat();
+        SheepUpSpeed = _buf.ReadFloat();
+        SheepFlySpeed = _buf.ReadFloat();
+        WhiteCloudSpeed = _buf.ReadFloat();
+        RainCloudSpeed = _buf.ReadFloat();
+        ThunderCloudSpeed = _buf.ReadFloat();
+        FlashIntervalTime = _buf.ReadFloat();
+        SuperGift1Count = _buf.ReadInt();
+        SuperGift2Count = _buf.ReadInt();
+        SuperGift3Count = _buf.ReadInt();
+        SuperGift4Count = _buf.ReadInt();
+        SuperGift5Count = _buf.ReadInt();
+        SuperGift6Count = _buf.ReadInt();
+        PerMaxLittleSheepCount = _buf.ReadInt();
+        VertigoBossTime = _buf.ReadFloat();
+        VertigoSheepTime = _buf.ReadFloat();
         PostInit();
     }
 
-    public GLConst(int MaxPlayerCount, float SheepNormalSpeed, float SheepUpSpeed, float SheepFlySpeed, float WhiteCloudSpeed, float RainCloudSpeed, float ThunderCloudSpeed, float FlashIntervalTime, int SuperGift1Count, int SuperGift2Count, int SuperGift3Count, int SuperGift4Count, int SuperGift5Count, int SuperGift6Count, int PerMaxLittleSheepCount, float VertigoBossTime, float VertigoSheepTime ) 
+    public static GLConst DeserializeGLConst(ByteBuf _buf)
     {
-        this.MaxPlayerCount = MaxPlayerCount;
-        this.SheepNormalSpeed = SheepNormalSpeed;
-        this.SheepUpSpeed = SheepUpSpeed;
-        this.SheepFlySpeed = SheepFlySpeed;
-        this.WhiteCloudSpeed = WhiteCloudSpeed;
-        this.RainCloudSpeed = RainCloudSpeed;
-        this.ThunderCloudSpeed = ThunderCloudSpeed;
-        this.FlashIntervalTime = FlashIntervalTime;
-        this.SuperGift1Count = SuperGift1Count;
-        this.SuperGift2Count = SuperGift2Count;
-        this.SuperGift3Count = SuperGift3Count;
-        this.SuperGift4Count = SuperGift4Count;
-        this.SuperGift5Count = SuperGift5Count;
-        this.SuperGift6Count = SuperGift6Count;
-        this.PerMaxLittleSheepCount = PerMaxLittleSheepCount;
-        this.VertigoBossTime = VertigoBossTime;
-        this.VertigoSheepTime = VertigoSheepTime;
-        PostInit();
-    }
-
-    public static GLConst DeserializeGLConst(JSONNode _json)
-    {
-        return new Battle.GLConst(_json);
+        return new Battle.GLConst(_buf);
     }
 
     /// <summary>
@@ -172,4 +147,5 @@ public sealed partial class GLConst :  Bright.Config.BeanBase
     partial void PostInit();
     partial void PostResolve();
 }
+
 }

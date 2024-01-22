@@ -7,40 +7,26 @@
 //------------------------------------------------------------------------------
 using Bright.Serialization;
 using System.Collections.Generic;
-using SimpleJSON;
-
 
 
 namespace cfg.Battle
-{ 
-
+{
 public sealed partial class SheepInfo :  Bright.Config.BeanBase 
 {
-    public SheepInfo(JSONNode _json) 
+    public SheepInfo(ByteBuf _buf) 
     {
-        { if(!_json["id"].IsNumber) { throw new SerializationException(); }  Id = _json["id"]; }
-        { if(!_json["name"].IsString) { throw new SerializationException(); }  Name = _json["name"]; }
-        { if(!_json["moveSpeed"].IsNumber) { throw new SerializationException(); }  MoveSpeed = _json["moveSpeed"]; }
-        { if(!_json["attackRange"].IsNumber) { throw new SerializationException(); }  AttackRange = _json["attackRange"]; }
-        { if(!_json["attackInv"].IsNumber) { throw new SerializationException(); }  AttackInv = _json["attackInv"]; }
-        { if(!_json["attack"].IsNumber) { throw new SerializationException(); }  Attack = _json["attack"]; }
+        Id = _buf.ReadInt();
+        Name = _buf.ReadString();
+        MoveSpeed = _buf.ReadFloat();
+        AttackRange = _buf.ReadFloat();
+        AttackInv = _buf.ReadFloat();
+        Attack = _buf.ReadInt();
         PostInit();
     }
 
-    public SheepInfo(int id, string name, float moveSpeed, float attackRange, float attackInv, int attack ) 
+    public static SheepInfo DeserializeSheepInfo(ByteBuf _buf)
     {
-        this.Id = id;
-        this.Name = name;
-        this.MoveSpeed = moveSpeed;
-        this.AttackRange = attackRange;
-        this.AttackInv = attackInv;
-        this.Attack = attack;
-        PostInit();
-    }
-
-    public static SheepInfo DeserializeSheepInfo(JSONNode _json)
-    {
-        return new Battle.SheepInfo(_json);
+        return new Battle.SheepInfo(_buf);
     }
 
     /// <summary>
@@ -95,4 +81,5 @@ public sealed partial class SheepInfo :  Bright.Config.BeanBase
     partial void PostInit();
     partial void PostResolve();
 }
+
 }

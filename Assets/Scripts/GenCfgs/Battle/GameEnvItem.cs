@@ -7,40 +7,26 @@
 //------------------------------------------------------------------------------
 using Bright.Serialization;
 using System.Collections.Generic;
-using SimpleJSON;
-
 
 
 namespace cfg.Battle
-{ 
-
+{
 public sealed partial class GameEnvItem :  Bright.Config.BeanBase 
 {
-    public GameEnvItem(JSONNode _json) 
+    public GameEnvItem(ByteBuf _buf) 
     {
-        { if(!_json["Id"].IsNumber) { throw new SerializationException(); }  Id = _json["Id"]; }
-        { if(!_json["Name"].IsString) { throw new SerializationException(); }  Name = _json["Name"]; }
-        { var __json0 = _json["Hp"]; if(!__json0.IsArray) { throw new SerializationException(); } Hp = new System.Collections.Generic.List<int>(__json0.Count); foreach(JSONNode __e0 in __json0.Children) { int __v0;  { if(!__e0.IsNumber) { throw new SerializationException(); }  __v0 = __e0; }  Hp.Add(__v0); }   }
-        { if(!_json["MaxCount"].IsNumber) { throw new SerializationException(); }  MaxCount = _json["MaxCount"]; }
-        { if(!_json["RefreshInv"].IsNumber) { throw new SerializationException(); }  RefreshInv = _json["RefreshInv"]; }
-        { if(!_json["GenerateItem"].IsNumber) { throw new SerializationException(); }  GenerateItem = _json["GenerateItem"]; }
+        Id = _buf.ReadInt();
+        Name = _buf.ReadString();
+        {int n0 = System.Math.Min(_buf.ReadSize(), _buf.Size);Hp = new System.Collections.Generic.List<int>(n0);for(var i0 = 0 ; i0 < n0 ; i0++) { int _e0;  _e0 = _buf.ReadInt(); Hp.Add(_e0);}}
+        MaxCount = _buf.ReadInt();
+        RefreshInv = _buf.ReadInt();
+        GenerateItem = _buf.ReadInt();
         PostInit();
     }
 
-    public GameEnvItem(int Id, string Name, System.Collections.Generic.List<int> Hp, int MaxCount, int RefreshInv, int GenerateItem ) 
+    public static GameEnvItem DeserializeGameEnvItem(ByteBuf _buf)
     {
-        this.Id = Id;
-        this.Name = Name;
-        this.Hp = Hp;
-        this.MaxCount = MaxCount;
-        this.RefreshInv = RefreshInv;
-        this.GenerateItem = GenerateItem;
-        PostInit();
-    }
-
-    public static GameEnvItem DeserializeGameEnvItem(JSONNode _json)
-    {
-        return new Battle.GameEnvItem(_json);
+        return new Battle.GameEnvItem(_buf);
     }
 
     /// <summary>
@@ -95,4 +81,5 @@ public sealed partial class GameEnvItem :  Bright.Config.BeanBase
     partial void PostInit();
     partial void PostResolve();
 }
+
 }

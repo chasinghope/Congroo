@@ -7,26 +7,25 @@
 //------------------------------------------------------------------------------
 using Bright.Serialization;
 using System.Collections.Generic;
-using SimpleJSON;
-
 
 
 namespace cfg.Battle
-{ 
-
-public sealed partial class TBGLConst
+{
+   
+public partial class TBGLConst
 {
     private readonly Dictionary<int, Battle.GLConst> _dataMap;
     private readonly List<Battle.GLConst> _dataList;
     
-    public TBGLConst(JSONNode _json)
+    public TBGLConst(ByteBuf _buf)
     {
         _dataMap = new Dictionary<int, Battle.GLConst>();
         _dataList = new List<Battle.GLConst>();
         
-        foreach(JSONNode _row in _json.Children)
+        for(int n = _buf.ReadSize() ; n > 0 ; --n)
         {
-            var _v = Battle.GLConst.DeserializeGLConst(_row);
+            Battle.GLConst _v;
+            _v = Battle.GLConst.DeserializeGLConst(_buf);
             _dataList.Add(_v);
             _dataMap.Add(_v.MaxPlayerCount, _v);
         }
@@ -56,7 +55,6 @@ public sealed partial class TBGLConst
             v.TranslateText(translator);
         }
     }
-    
     
     partial void PostInit();
     partial void PostResolve();

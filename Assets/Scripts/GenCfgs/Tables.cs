@@ -6,19 +6,18 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 using Bright.Serialization;
-using SimpleJSON;
+
 
 
 namespace cfg
 { 
-   
-public sealed partial class Tables
+public partial class Tables
 {
     public Battle.TBGLConst TBGLConst {get; }
     public Battle.TBGameEnvItem TBGameEnvItem {get; }
     public Battle.TBSheepInfo TBSheepInfo {get; }
 
-    public Tables(System.Func<string, JSONNode> loader)
+    public Tables(System.Func<string, ByteBuf> loader)
     {
         var tables = new System.Collections.Generic.Dictionary<string, object>();
         TBGLConst = new Battle.TBGLConst(loader("battle_tbglconst")); 
@@ -27,8 +26,8 @@ public sealed partial class Tables
         tables.Add("Battle.TBGameEnvItem", TBGameEnvItem);
         TBSheepInfo = new Battle.TBSheepInfo(loader("battle_tbsheepinfo")); 
         tables.Add("Battle.TBSheepInfo", TBSheepInfo);
-        PostInit();
 
+        PostInit();
         TBGLConst.Resolve(tables); 
         TBGameEnvItem.Resolve(tables); 
         TBSheepInfo.Resolve(tables); 

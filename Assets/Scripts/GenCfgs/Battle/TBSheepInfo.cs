@@ -7,26 +7,25 @@
 //------------------------------------------------------------------------------
 using Bright.Serialization;
 using System.Collections.Generic;
-using SimpleJSON;
-
 
 
 namespace cfg.Battle
-{ 
-
-public sealed partial class TBSheepInfo
+{
+   
+public partial class TBSheepInfo
 {
     private readonly Dictionary<int, Battle.SheepInfo> _dataMap;
     private readonly List<Battle.SheepInfo> _dataList;
     
-    public TBSheepInfo(JSONNode _json)
+    public TBSheepInfo(ByteBuf _buf)
     {
         _dataMap = new Dictionary<int, Battle.SheepInfo>();
         _dataList = new List<Battle.SheepInfo>();
         
-        foreach(JSONNode _row in _json.Children)
+        for(int n = _buf.ReadSize() ; n > 0 ; --n)
         {
-            var _v = Battle.SheepInfo.DeserializeSheepInfo(_row);
+            Battle.SheepInfo _v;
+            _v = Battle.SheepInfo.DeserializeSheepInfo(_buf);
             _dataList.Add(_v);
             _dataMap.Add(_v.Id, _v);
         }
@@ -56,7 +55,6 @@ public sealed partial class TBSheepInfo
             v.TranslateText(translator);
         }
     }
-    
     
     partial void PostInit();
     partial void PostResolve();
