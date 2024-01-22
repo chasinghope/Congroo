@@ -2,7 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Congroo.Core;
-using NaughtyAttributes;
+using Sirenix.OdinInspector;
+
 public class LogTest : MonoBehaviour
 {
     // Start is called before the first frame update
