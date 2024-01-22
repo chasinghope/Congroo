@@ -31,8 +31,6 @@
 
 ## Congroo.ThirdLib
 
-[GitHub - dbrizov/NaughtyAttributes: Attribute Extensions for Unity](https://github.com/dbrizov/NaughtyAttributes)
-
 https://github.com/focus-creative-games/luban
 
 [Addressables | Addressables | 1.19.19 (unity3d.com)](https://docs.unity3d.com/Packages/com.unity.addressables@1.19/manual/index.html)
