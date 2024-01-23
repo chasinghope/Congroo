@@ -3,31 +3,63 @@
 
 namespace Congroo.Core
 {
-    public class SingletonMono<T> : MonoBehaviour where T : SingletonMono<T>
+    public abstract class SingletonMono<T> : MonoBehaviour where T : SingletonMono<T>
     {
-        private static T mInstance;
-        public static T Instance;
 
-        protected virtual void Awake()
+        #region Fields
+
+        /// <summary>
+        /// The instance.
+        /// </summary>
+        private static T instance;
+
+        #endregion
+
+        #region Properties
+
+        /// <summary>
+        /// Gets the instance.
+        /// </summary>
+        /// <value>The instance.</value>
+        public static T Instance
         {
-            if (mInstance == null)
-                mInstance = this as T;
-        }
-
-
-        protected virtual void OnApplicationQuit()
-        {
-            Release();
-        }
-
-
-        public void Release()
-        {
-            if (mInstance != null)
+            get
             {
-                Destroy(gameObject);
-                mInstance = null;
+                if (instance == null)
+                {
+                    instance = FindObjectOfType<T>();
+                    if (instance == null)
+                    {
+                        GameObject obj = new GameObject();
+                        obj.name = typeof(T).Name;
+                        instance = obj.AddComponent<T>();
+                    }
+                }
+
+                return instance;
             }
         }
+
+        #endregion
+
+        #region Methods
+
+        /// <summary>
+        /// Use this for initialization.
+        /// </summary>
+        protected virtual void Awake()
+        {
+            if (instance == null)
+            {
+                instance = this as T;
+                DontDestroyOnLoad(gameObject);
+            }
+            else
+            {
+                Destroy(gameObject);
+            }
+        }
+
+        #endregion
     }
 }

@@ -31,7 +31,7 @@ namespace Congroo.Core
         {
             if(mDataModelList.Contains(model))
             {
-                model.Dispose();
+                model.Release();
                 mDataModelList.Remove(model);
             }
         }
