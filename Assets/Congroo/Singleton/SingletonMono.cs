@@ -6,7 +6,7 @@ namespace Congroo.Core
     public class SingletonMono<T> : MonoBehaviour where T : SingletonMono<T>
     {
         private static T mInstance;
-        public static T Instance
+        public static T Ins
         {
             get
             {

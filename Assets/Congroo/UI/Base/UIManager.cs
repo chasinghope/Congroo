@@ -1,249 +1,629 @@
+using System;
 using Congroo.Core;
-using Cysharp.Threading.Tasks;
 using System.Collections.Generic;
+using System.Linq;
+using System.Runtime.CompilerServices;
+using System.Threading;
 using System.Threading.Tasks;
-using System.Xml.Linq;
+using Cysharp.Threading.Tasks;
 using UnityEngine;
-using UnityEngine.AddressableAssets;
-using UnityEngine.ResourceManagement.AsyncOperations;
-
-public enum UIType
-{
-    Page,
-    Popup,
-
-
-}
+using UnityEngine.ResourceManagement;
+using GameObjectTask = Cysharp.Threading.Tasks.UniTask<UnityEngine.GameObject>;
+using UIBaseTask = Cysharp.Threading.Tasks.UniTask<UIBase>;
 
 public class UIManager : SingletonMono<UIManager>
 {
-    [Header("Settings")]
-    public List<AssetReferenceT<GameObject>> PreLoadList;
+    private readonly Dictionary<Type, GameObject> mInstanceDict = new Dictionary<Type, GameObject>();
+    private readonly Stack<(Type type, UIData data)> mPanleStack = new Stack<(Type type, UIData data)>();
+    private readonly Dictionary<Type, UILayerAttribute> mTypeLayerDict = new Dictionary<Type, UILayerAttribute>();
+    
+    private RectTransform mLayerTransform;
+    
+    
+    [SerializeField] private Canvas mCanvas;
+    [SerializeField] private GameObject mStuck;
+    [Header("UILayer")] 
+    [SerializeField] private RectTransform mPanelLayer;
+    [SerializeField] private RectTransform mPopupLayer;
+    
+    
+    /// <summary>
+    /// UI»­²¼
+    /// </summary>
+    public Canvas Canvas { get; private set; }
 
+    /// <summary>
+    /// UIÏà»ú
+    /// </summary>
+    public Camera Camera { get; private set; }
+    
+    public GameObject Stuck { get; private set; }
 
-    [Header("Component")]
-    public Transform PageRoot;
-    public Transform PopupRoot;
-
-    private Dictionary<string, UIPageBase> Page_LoadedDict = new Dictionary<string, UIPageBase>();
-    private Dictionary<string, UIPopupBase> Popup_LoadedDict = new Dictionary<string, UIPopupBase>();
-
-    private Stack<string> mPageStack = new Stack<string>();
-
-
-    protected override void Awake()
+    /// <summary>
+    /// µ±¼ÓÔØUI³¬¹ýÕâ¸öÊ±¼ä£¨µ¥Î»£ºÃë£©Ê±£¬¼ì²âÎª¿¨×¡
+    /// </summary>
+    public float StuckTime = 1;
+    
+    
+    /// <summary>
+    /// µ±Ç°ÏÔÊ¾µÄPanel
+    /// </summary>
+    public UIBase CurrentPanel
     {
-        base.Awake();
-        GameObject.DontDestroyOnLoad(gameObject);
-    }
-
-    private async void Start()
-    {
-        await Initialize();
-    }
-    public async UniTask Initialize()
-    {
-        await Preload();
-        await this.OpenPageUI(UIViewName.MainView);
-    }
-
-
-    public async UniTask Preload()
-    {
-        foreach (var item in PreLoadList)
+        get
         {
-            var handler = item.LoadAssetAsync();
-            await handler.Task;
-            GameObject go = GameObject.Instantiate(handler.Result, Vector3.zero, Quaternion.identity);
-            go.transform.localScale = Vector3.one;
-            go.SetActive(true);
+            if (mPanleStack.Count <= 0) return null;
 
-            var uiBase = go.GetComponent<UIBase>();
-            uiBase.UName = handler.Result.name;
+            if (mPanleStack.Peek().type == null) return null;
 
-            if (uiBase is UIPageBase)
+            if (mInstanceDict.TryGetValue(mPanleStack.Peek().type, out var instance))
             {
-                go.transform.SetParent(PageRoot, false);
-                Page_LoadedDict.Add(uiBase.UName, uiBase as UIPageBase);
+                return instance.GetComponent<UIBase>();
+            }
+            return null;
+        }
+    }
+    
+    #region ÊÂ¼þ
+    /// <summary>
+    /// ¿¨×¡¿ªÊ¼Ê±´¥·¢µÄÊÂ¼þ
+    /// </summary>
+    public event Action OnStuckStart;
+
+    /// <summary>
+    /// ¿¨×¡½áÊøÊ±´¥·¢µÄÊÂ¼þ
+    /// </summary>
+    public event Action OnStuckEnd;
+
+    /// <summary>
+    /// ×ÊÔ´ÇëÇó
+    /// </summary>
+    public event Func<Type, GameObjectTask> OnAssetRequest;
+
+    /// <summary>
+    /// ×ÊÔ´ÊÍ·Å
+    /// </summary>
+    public event Action<Type> OnAssetRelease;
+
+    /// <summary>
+    /// UI´´½¨Ê±µ÷ÓÃ
+    /// </summary>
+    public event Action<UIBase> OnCreate;
+
+    /// <summary>
+    /// UIË¢ÐÂÊ±µ÷ÓÃ
+    /// </summary>
+    public event Action<UIBase> OnRefresh;
+
+    /// <summary>
+    /// UI°ó¶¨ÊÂ¼þÊ±µ÷ÓÃ
+    /// </summary>
+    public event Action<UIBase> OnBind;
+
+    /// <summary>
+    /// UI½â°óÊÂ¼þÊ±µ÷ÓÃ
+    /// </summary>
+    public event Action<UIBase> OnUnbind;
+
+    /// <summary>
+    /// UIÏÔÊ¾Ê±µ÷ÓÃ
+    /// </summary>
+    public event Action<UIBase> OnShow;
+
+    /// <summary>
+    /// UIÒþ²ØÊ±µ÷ÓÃ
+    /// </summary>
+    public event Action<UIBase> OnHide;
+
+    /// <summary>
+    /// UIÏú»ÙÊ±µ÷ÓÃ
+    /// </summary>
+    public event Action<UIBase> OnDied;
+    #endregion
+    
+    
+    public void Initialize()
+    {
+        if (mCanvas == null) throw new Exception("UIFrame³õÊ¼»¯Ê§°Ü£¬ÇëÉèÖÃCanvas");
+        if (mCanvas.worldCamera == null) throw new Exception("UIFrame³õÊ¼»¯Ê§°Ü£¬Çë¸øCanvasÉèÖÃworldCamera");
+        Canvas = mCanvas;
+        Camera = mCanvas.worldCamera;
+        // mLayerTransform.anchorMin = Vector2.zero;
+        // mLayerTransform.anchorMax = Vector2.one;
+        // mLayerTransform.offsetMin = Vector2.zero;
+        // mLayerTransform.offsetMax = Vector2.zero;
+
+        Stuck = mStuck;
+        DontDestroyOnLoad(gameObject);
+
+        OnAssetRequest += Test_OnAssetRequestHandler;
+        OnAssetRelease += Test_OnAssetReleaseHandler;
+    }
+
+    
+    #region UI×ÊÔ´
+    
+    public Dictionary<Type, GameObject> mPrefabResDict = new Dictionary<Type, GameObject>();
+    public const string UI_PATH = "UI/";
+    
+    private void Test_OnAssetReleaseHandler(Type rType)
+    {
+        if (mPrefabResDict.TryGetValue(rType, out GameObject res))
+        {
+            Resources.UnloadAsset(res);
+            mPrefabResDict.Remove(rType);
+        }
+    }
+
+    private async GameObjectTask Test_OnAssetRequestHandler(Type rType)
+    {
+        string path = UI_PATH + rType.Name;
+        ResourceRequest request = Resources.LoadAsync<GameObject>(path);
+        var res = await request;
+        GameObject resPrefab = res as GameObject;
+        mPrefabResDict[rType] = resPrefab;
+        return resPrefab;
+    }
+    
+    #endregion
+
+
+    #region ²Ù×÷
+
+    
+    /// <summary>
+    /// ´ò¿ªUI
+    /// </summary>
+    /// <param name="rData"></param>
+    /// <typeparam name="T"></typeparam>
+    public void Open(string rTypeName, UIData rData = null)
+    {
+        Type type = Type.GetType(rTypeName);
+    }
+
+    
+    public void Open(Type rType, UIData rData = null) 
+    {
+        ShowAsync(rType, rData).Forget();
+    }
+    
+    /// <summary>
+    /// ´ò¿ªUI
+    /// </summary>
+    /// <param name="rData"></param>
+    /// <typeparam name="T"></typeparam>
+    public void Open<T>(UIData rData = null) where T : UIBase
+    {
+        ShowAsync(typeof(T), rData).Forget();
+    }
+
+    public async UniTask<T> OpenAsync<T>(UIData rData = null) where T : UIBase
+    {
+         UIBase uiBase = await ShowAsync(typeof(T), rData);
+         return uiBase as T;
+    }
+
+
+    /// <summary>
+    /// Ë¢ÐÂUI
+    /// </summary>
+    /// <param name="rData"></param>
+    /// <typeparam name="T"></typeparam>
+    public async UniTask Refresh<T>(UIData rData = null) where T : UIBase
+    {
+        Type type = typeof(T);
+        if (mInstanceDict.TryGetValue(type, out GameObject instance))
+        {
+            UIBase ui = instance.GetComponent<UIBase>();
+            if (!ui.gameObject.activeInHierarchy) 
+                return;
+            
+            if (rData != null) TrySetData(ui, rData);
+            await DoRefresh(ui);
+        }
+    }
+    
+    public async UniTask RefreshAll(Func<Type, bool> rPredicate = null)
+    {
+        foreach (var item in mInstanceDict)
+        {
+            if (rPredicate != null && !rPredicate.Invoke(item.Key)) continue;
+
+            UIBase ui = item.Value.GetComponent<UIBase>();
+            if (!ui.gameObject.activeInHierarchy) 
+                return;
+
+            await DoRefresh(ui);
+        }
+    }
+
+    
+    public void Hide<T>(bool rForceDestroy = false)
+    { 
+        HideAsync(typeof(T), rForceDestroy).Forget();
+    }
+    
+    public async UniTask HideAysnc<T>(bool rForceDestroy = false)
+    { 
+        await HideAsync(typeof(T), rForceDestroy);
+    }
+    
+    
+    /// <summary>
+    /// »ñÈ¡UI
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <returns></returns>
+    public T Get<T>() where T : UIBase
+    {
+        if (mInstanceDict.TryGetValue(typeof(T), out GameObject instance))
+        {
+            return instance.GetComponent<UIBase>() as T;
+        }
+        return null;
+    }
+
+    /// <summary>
+    /// ³¢ÊÔ»ñÈ¡UI
+    /// </summary>
+    /// <param name="rUI"></param>
+    /// <typeparam name="T"></typeparam>
+    /// <returns></returns>
+    public bool TryGet<T>(out T rUI) where T : UIBase
+    {
+        rUI = Get<T>();
+        return rUI != null;
+    }
+
+    
+    /// <summary>
+    /// uiÊÇ·ñ±»´ò¿ªÁË
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <returns></returns>
+    public bool IsOpened<T>() where T : UIBase
+    {
+        if (mInstanceDict.TryGetValue(typeof(T), out GameObject instance))
+        {
+            if (instance.activeInHierarchy)
+                return true;
+        }
+
+        return false;
+    }
+    
+    #endregion
+
+
+    
+    private async UIBaseTask ShowAsync(Type rType, UIData rData = null)
+    {
+        UILayerAttribute uiLayerAttribute = GetLayer(rType);
+        if (uiLayerAttribute == null)
+        {
+            throw new Exception("UIManager Error: ÀàÐÍÃ»ÓÐÉèÖÃUILayerÊôÐÔ");
+        }
+
+        try
+        {
+            CancellationTokenSource timeoutCts = new ();
+            UIBase result = null;
+            bool isStuck = false;
+            UniTask.Delay(TimeSpan.FromSeconds(StuckTime), ignoreTimeScale: true).GetAwaiter().OnCompleted(() =>
+            {
+                if (timeoutCts.IsCancellationRequested) return;
+                OnStuckStart?.Invoke();
+                isStuck = true;
+            });
+
+            if (uiLayerAttribute.Layer == EUILayer.Panel)
+            {
+                UIBase curPanel = CurrentPanel;
+                if (curPanel != null && rType == curPanel.GetType())
+                {
+                    Debug.LogWarning("UIManager Warning: ÖØ¸´´ò¿ªÍ¬ÀàÐÍUI");
+                    return curPanel;
+                }
+
+
+                if (curPanel != null)
+                {
+                    DoUnbind(curPanel);
+                }
+
+                GameObject instance = await RequestInstance(rType, rData, mPanelLayer);
+                UIBase uiBase = instance.GetComponent<UIBase>();
+                await DoCreate(uiBase);
+                
+                if (rData != null && curPanel != null)
+                {
+                    rData.Sender = curPanel.GetType();
+                }
+                await DoRefresh(uiBase);
+                if (curPanel != null)
+                {
+                    DoHide(curPanel);
+                    curPanel.gameObject.SetActive(false);
+                    if (curPanel.AutoDestroy)
+                        ReleaseInstance(curPanel.GetType());
+                }
+        
+                instance.SetActive(true);
+                
+                DoBind(uiBase);
+                DoShow(uiBase);
+                
+                mPanleStack.Push((rType, rData));
+                result = uiBase;
+
+            }
+            else if (uiLayerAttribute.Layer == EUILayer.Popup)
+            {
+                GameObject instance = await RequestInstance(rType, rData, mPopupLayer);
+                UIBase uiBase = instance.GetComponent<UIBase>();
+
+                if (rData != null && CurrentPanel != null)
+                {
+                    rData.Sender = CurrentPanel.GetType();
+                }
+
+                if (!uiBase.gameObject.activeInHierarchy)
+                {
+                    await DoCreate(uiBase);
+                    await DoRefresh(uiBase);
+                    instance.SetActive(true);
+                    instance.transform.SetAsLastSibling();
+                    DoBind(uiBase);
+                    DoShow(uiBase);
+                }
+                else
+                {
+                    Debug.LogWarning("UIManager Warning: ÖØ¸´´ò¿ªÍ¬ÀàÐÍUI");
+                }
+
+                result = uiBase;
             }
 
-            if (uiBase is UIPopupBase)
+            timeoutCts.Cancel();
+            if (isStuck)
             {
-                go.transform.SetParent(PopupRoot, false);
-                Popup_LoadedDict.Add(uiBase.UName, uiBase as UIPopupBase);
+                OnStuckEnd?.Invoke();
             }
 
-            go.transform.SetAsLastSibling();
-
-            uiBase.Init();
-
-            go.SetActive(false);
+            return result;
+        }
+        catch (Exception ex)
+        {
+            Debug.LogException(ex);
+            return null;
         }
     }
-
-    public async UniTask<T> SpawnUI<T>(string rUName) where T : UIBase
+    
+        
+    public async UniTask HideAsync(Type rType, bool rForceDestroy = false)
     {
-        string path = GetAddressablePath(rUName);
-        CLog.L(LType.UI, $"SpawnUI<T> {path}");
-
-        var op = ResMgr.Instance.LoadAssetAsync<GameObject>(path);
-        await op.Task;
-        GameObject prefab = null;
-        if(op.Status == AsyncOperationStatus.Succeeded)
+        UILayerAttribute uiLayerAttribute = GetLayer(rType);
+        if (uiLayerAttribute == null)
         {
-            prefab = op.Result;
-        }
-        else
-        {
-            CLog.E(LType.UI, "Failed to load ui prefab");
-        }
-        GameObject go = GameObject.Instantiate(prefab, Vector3.zero, Quaternion.identity);
-        go.transform.localScale = Vector3.one;
-        T uiBase = go.GetComponent<UIBase>() as T;
-        uiBase.UName = prefab.name;
-        uiBase.Asset = op;
-        uiBase.Init();
-        return uiBase;
-    }
-
-
-    public async UniTask OpenPageUI(string rUName)
-    {
-        // ï¿½Ø±Õµï¿½Ç°ï¿½ï¿½ï¿½ï¿½
-        string prePage = string.Empty;
-        if(mPageStack.Count > 0)
-        {
-            prePage = mPageStack.Peek();
+            throw new Exception("UIManager Error: ÀàÐÍÃ»ÓÐÉèÖÃUILayerÊôÐÔ");
         }
 
-        if (this.Page_LoadedDict.TryGetValue(rUName, out UIPageBase uiBase))
+        try
         {
-            uiBase.Open();
-            mPageStack.Push(rUName);
-        }
-        else
-        {
-            UIPageBase uiPageBase = await SpawnUI<UIPageBase>(rUName);
-
-            uiPageBase.transform.SetParent(PageRoot, false);
-            uiPageBase.transform.SetAsLastSibling();
-            Page_LoadedDict.Add(uiPageBase.UName, uiPageBase);
-            uiPageBase.Open();
-            mPageStack.Push(rUName);
-        }
-
-        if(!string.IsNullOrEmpty(prePage))
-        {
-            ClosePageUI(prePage);
-        }
-    }
-
-    public async UniTask BackPage()
-    {
-        if(mPageStack.Count > 1)
-        {
-            // ï¿½Ø±Õµï¿½Ç°ï¿½ï¿½ï¿½ï¿½
-            string prePage = mPageStack.Pop();
-            string curPage = mPageStack.Pop();
-
-            if (this.Page_LoadedDict.TryGetValue(curPage, out UIPageBase uiBase))
+            if (uiLayerAttribute.Layer == EUILayer.Panel)
             {
-                uiBase.Open();
-                mPageStack.Push(curPage);
+                CancellationTokenSource timeoutCts = new CancellationTokenSource();
+
+                bool isStuck = false;
+                Task.Delay(TimeSpan.FromSeconds(StuckTime)).GetAwaiter().OnCompleted(() =>
+                {
+                    if (timeoutCts.IsCancellationRequested) return;
+                    OnStuckStart?.Invoke();
+                    isStuck = true;
+                });
+                
+                UIBase curPanel = CurrentPanel;
+                if (curPanel == null)
+                {
+                    timeoutCts.Cancel();
+                    Debug.LogWarning("UIManager Warning: µ±Ç°Ã»ÓÐ´ò¿ªµÄÃæ°å");
+                    return;
+                }
+
+                mPanleStack.Pop();
+                if (mPanleStack.Count <= 0)
+                {
+                    (Type prePanelType, UIData preData) = mPanleStack.Peek();
+                    if (preData != null && curPanel != null)
+                    {
+                        preData.Sender = curPanel.GetType();
+                    }
+
+                    GameObject instance = await RequestInstance(prePanelType, preData, mPanelLayer);
+                    UIBase uiBase = instance.GetComponent<UIBase>();
+                    await DoRefresh(uiBase);
+                    curPanel.gameObject.SetActive(false);
+                    DoUnbind(curPanel);
+                    DoHide(curPanel);
+                    if (curPanel.AutoDestroy || rForceDestroy) ReleaseInstance(curPanel.GetType());
+                    instance.SetActive(true);
+                    instance.transform.SetAsLastSibling();
+                    DoBind(uiBase);
+                    DoShow(uiBase);
+                }
+                else
+                {
+                    curPanel.gameObject.SetActive(false);
+                    DoUnbind(curPanel);
+                    DoHide(curPanel);
+                    if (curPanel.AutoDestroy || rForceDestroy) ReleaseInstance(curPanel.GetType());
+                }
+
+                timeoutCts.Cancel();
+                if (isStuck)
+                   OnStuckEnd?.Invoke();
             }
-            else
+            else if(uiLayerAttribute.Layer == EUILayer.Popup)
             {
-                UIPageBase uiPageBase = await SpawnUI<UIPageBase>(curPage);
-
-                uiPageBase.transform.SetParent(PageRoot, false);
-                uiPageBase.transform.SetAsLastSibling();
-                Page_LoadedDict.Add(uiPageBase.UName, uiPageBase);
-                uiPageBase.Open();
-                mPageStack.Push(curPage);
-            }
-
-            if (!string.IsNullOrEmpty(prePage))
-            {
-                ClosePageUI(prePage);
+                if (mInstanceDict.TryGetValue(rType, out GameObject instance))
+                {
+                    UIBase uibase = instance.GetComponent<UIBase>();
+                    DoUnbind(uibase);
+                    DoHide(uibase);
+                    instance.SetActive(false);
+                    if (uibase.AutoDestroy || rForceDestroy) 
+                        ReleaseInstance(rType);
+                }
             }
         }
-        else
+        catch (Exception e)
         {
-            CLog.L(LType.UI, $"ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½,ï¿½Þ·ï¿½ï¿½ï¿½ï¿½ï¿½");
+            Debug.LogException(e);
         }
     }
-
-    public async UniTask OpenPopupUI(string rUName)
+    
+    private async GameObjectTask RequestInstance(Type rType, UIData rData, RectTransform rParent)
     {
-        if (this.Popup_LoadedDict.TryGetValue(rUName, out UIPopupBase uiBase))
-        {
-            uiBase.Open();
-        }
-        else
-        {
-            UIPopupBase uiPopupBase = await SpawnUI<UIPopupBase>(rUName);
+        if (rType == null) throw new NullReferenceException();
 
-            uiPopupBase.transform.SetParent(PopupRoot, false);
-            uiPopupBase.transform.SetAsLastSibling();
-            Popup_LoadedDict.Add(uiPopupBase.UName, uiPopupBase);
-            uiPopupBase.Open();
+        if (mInstanceDict.TryGetValue(rType, out GameObject instance))
+        {
+            TrySetData(instance.GetComponent<UIBase>(), rData);
+            return instance;
         }
+        GameObject refInstance = null;
+        if (OnAssetRequest != null)
+        {
+            refInstance = await OnAssetRequest.Invoke(rType);
+        }
+        if (refInstance == null) throw new Exception("×ÊÔ´¼ÓÔØÊ§°Ü");
+        UIBase uibase = refInstance.GetComponent<UIBase>();
+        if (uibase == null) throw new Exception("Ô¤ÖÆÌåÃ»ÓÐ¹ÒÔØ¼Ì³Ð×ÔUIBaseµÄ½Å±¾");
+        instance = Instantiate(refInstance, rParent, rData);
+        mInstanceDict[rType] = instance;
+        return instance;
     }
-
-
-    private void ClosePageUI(string rUName)
+    
+    private GameObject Instantiate(GameObject prefab, Transform parent = null, UIData data = null)
     {
-        if (this.Page_LoadedDict.TryGetValue(rUName, out UIPageBase uiBase))
+        bool refActiveSelf = prefab.activeSelf;
+        prefab.SetActive(false);
+        GameObject instance = GameObject.Instantiate(prefab, parent);
+        prefab.SetActive(refActiveSelf);
+        UIBase uibase = instance.GetComponent<UIBase>();
+        TrySetData(uibase, data);
+        return instance;
+    }
+
+    private void ReleaseInstance(Type type)
+    {
+        if (type == null) return;
+
+        if (mInstanceDict.TryGetValue(type, out GameObject instance))
         {
-            uiBase.Close();
-            if (!uiBase.IsNeedCache)
-            {
-                GameObject.Destroy(uiBase.gameObject);
-                this.Page_LoadedDict.Remove(rUName);
-                ResMgr.Instance.Relase(uiBase.Asset);
-            }
+            this.Destroy(instance);
+            OnAssetRelease?.Invoke(type);
+            mInstanceDict.Remove(type);
         }
     }
+    
+    
+    // private bool TrySetData(UIBase rUI, UIData rData)
+    // {
+    //     if (rUI == null) return false;
+    //     PropertyInfo property = rUI.GetType().GetProperty("Data", BindingFlags.Public | BindingFlags.Instance);
+    //     if (property == null) return false;
+    //     property.SetValue(rUI, rData);
+    //     return true;
+    // }
 
-
-    public void ClosePopupUI(string rUName)
+    private bool TrySetData(UIBase rUI, UIData rData)
     {
-        if (this.Popup_LoadedDict.TryGetValue(rUName, out UIPopupBase uiBase))
+        if (rUI == null) return false;
+        rUI.DataReference = rData;
+        return true;
+    }
+    
+    private UILayerAttribute GetLayer(Type rType)
+    {
+        if (rType == null) return null;
+        if (!mTypeLayerDict.TryGetValue(rType, out UILayerAttribute layer))
         {
-            uiBase.Close();
-            if (!uiBase.IsNeedCache)
-            {
-                GameObject.Destroy(uiBase.gameObject);
-                this.Popup_LoadedDict.Remove(rUName);
-                ResMgr.Instance.Relase(uiBase.Asset);
-            }
+            layer = rType.GetCustomAttributes(typeof(UILayerAttribute), false).FirstOrDefault() as UILayerAttribute;
+            mTypeLayerDict[rType] = layer;
         }
+        return layer;
     }
 
-
-    public T GetPageUI<T>(string rUIName) where T : UIPageBase
+    
+    #region UIBase
+    
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private async UniTask DoCreate(UIBase rUIBase)
     {
-        if (Page_LoadedDict.TryGetValue(rUIName, out UIPageBase value))
-        {
-            return value as T;
-        }
-        return default(T);
+        OnCreate?.Invoke(rUIBase);
+        rUIBase.Status = UIStatus.Creating;
+        await rUIBase.InnerOnCreate();
     }
-
-
-    public T GetPopupUI<T>(string rUIName) where T : UIPopupBase
+    
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private async UniTask DoRefresh(UIBase rUIBase)
     {
-        if (Popup_LoadedDict.TryGetValue(rUIName, out UIPopupBase value))
-        {
-            return value as T;
-        }
-        return default(T);
+        OnRefresh?.Invoke(rUIBase);
+        await rUIBase.InnerOnRefresh();
     }
 
-
-    private string GetAddressablePath(string rUName)
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private void DoBind(UIBase rUIBase)
     {
-        return $"Prefabs/UI/{rUName}.prefab";
+        OnBind?.Invoke(rUIBase);
+        rUIBase.InnerOnBind();
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private void DoUnbind(UIBase rUIBase)
+    {
+        OnUnbind?.Invoke(rUIBase);
+        rUIBase.InnerOnUnbind();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private void DoShow(UIBase rUIBase)
+    {
+        OnShow?.Invoke(rUIBase);
+        rUIBase.InnerOnShow();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private void DoHide(UIBase rUIBase)
+    {
+        OnHide?.Invoke(rUIBase);
+        rUIBase.InnerOnHide();
+    }
+    
+    
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private void Destroy(GameObject instance)
+    {
+        UIBase uiBase = instance.GetComponent<UIBase>();
+        OnDied?.Invoke(uiBase);
+        uiBase.InnerOnDied();
+        GameObject.Destroy(instance);
+    }
+    
+    
+    #endregion
+    
+    
+
+   
+    // public void OpenStuck()
+    // {
+    //     Stuck.SetActive(true);
+    // }
+    //
+    // public void HideStuck()
+    // {
+    //     Stuck.SetActive(false);
+    // }
 }

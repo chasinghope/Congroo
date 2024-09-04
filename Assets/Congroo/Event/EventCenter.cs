@@ -146,9 +146,9 @@ namespace Congroo.Core
             {
                 if (evt.ListenerActions != null)
                 {
-                    foreach (var item in evt.ListenerActions)
+                    for (int i = 0; i < evt.ListenerActions.Count; i++)
                     {
-                        item?.Invoke(rEventArg);
+                        evt.ListenerActions[i]?.Invoke(rEventArg);
                     }
                 }
             }

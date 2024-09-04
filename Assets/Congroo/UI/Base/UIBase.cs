@@ -1,76 +1,68 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using Congroo.Core;
-using System;
-using UnityEngine.ResourceManagement.AsyncOperations;
-using Sirenix.OdinInspector;
+using Cysharp.Threading.Tasks;
 
 public enum UIStatus
 {
-    Open,
-    Close,
+    None,
+    Creating,
+    Showing,
+    Hiding,
+    Destroying,
 }
 
-
+[RequireComponent(typeof(RequireComponent))]
+[DisallowMultipleComponent]
 public abstract class UIBase : MonoBehaviour
 {
-    public virtual bool IsNeedCache { get; protected set; } = false;
-    public virtual UIType UType { get; protected set; }
+    /// <summary>
+    /// 是否自动销毁
+    /// </summary>
+    public bool AutoDestroy = true;
+    public UIStatus Status = UIStatus.None;
+    
+    public UIData DataReference;
+    
+    protected internal UniTask InnerOnCreate() => OnCreate();
+    protected internal UniTask InnerOnRefresh() => OnRefresh();
+    protected internal void InnerOnBind() => OnBind();
+    protected internal void InnerOnUnbind() => OnUnbind();
+    protected internal void InnerOnShow() => OnShow();
+    protected internal void InnerOnHide() => OnHide();
+    protected internal void InnerOnDied() => OnDied();
+    
+    
+    /// <summary>
+    /// 创建时调用，生命周期内只执行一次
+    /// </summary>
+    protected virtual UniTask OnCreate() => UniTask.CompletedTask;
 
-    [NonSerialized] public string UName;
+    /// <summary>
+    /// 刷新时调用
+    /// </summary>
+    protected virtual UniTask OnRefresh() => UniTask.CompletedTask;
 
-    [ReadOnly] public UIStatus UIStatus = UIStatus.Close;
+    /// <summary>
+    /// 绑定事件
+    /// </summary>
+    protected virtual void OnBind() { }
 
-    protected List<EventWrapper> mEventWrappers; 
+    /// <summary>
+    /// 解绑事件
+    /// </summary>
+    protected virtual void OnUnbind() { }
 
-    public AsyncOperationHandle<GameObject> Asset { get; set; }
+    /// <summary>
+    /// 显示时调用
+    /// </summary>
+    protected virtual void OnShow() { }
 
-    public void Init()
-    {
-        IsNeedCache = true;
-        this.gameObject.SetActive(false);
+    /// <summary>
+    /// 隐藏时调用
+    /// </summary>
+    protected virtual void OnHide() { }
 
-        mEventWrappers = EventCenter.GetTypeEvents(this);
-
-        OnInit();
-    }
-
-    public void Open()
-    {
-        if (UIStatus == UIStatus.Open)
-            return;
-        UIStatus = UIStatus.Open;
-
-
-        this.OnOpen();
-        this.gameObject.SetActive(true);
-        EventCenter.Instance.BindEventWrappers(mEventWrappers);
-    }
-
-    public void Close()
-    {
-        if (UIStatus == UIStatus.Close)
-            return;
-        UIStatus = UIStatus.Close;
-
-        this.OnClose();
-        this.gameObject.SetActive(false);
-        EventCenter.Instance.UnbindEventWrappers(mEventWrappers);
-    }
-
-    protected virtual void OnInit()
-    {
-
-    }
-
-    protected virtual void OnOpen()
-    {
-
-    }
-
-    protected virtual void OnClose()
-    {
-
-    }
+    /// <summary>
+    /// 销毁时调用，生命周期内只执行一次
+    /// </summary>
+    protected virtual void OnDied() { }
 }
