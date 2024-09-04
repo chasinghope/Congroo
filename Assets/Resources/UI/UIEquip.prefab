@@ -605,7 +605,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c1ff186b7724485694c5804d28ff4581, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  AutoDestroy: 1
+  AutoDestroy: 0
   Status: 0
   mOkButton: {fileID: 7608754363342221879}
   mCancelButton: {fileID: 7608754362374016770}

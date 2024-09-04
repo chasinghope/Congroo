@@ -9,6 +9,7 @@ using Cysharp.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.ResourceManagement;
 using GameObjectTask = Cysharp.Threading.Tasks.UniTask<UnityEngine.GameObject>;
+using Object = UnityEngine.Object;
 using UIBaseTask = Cysharp.Threading.Tasks.UniTask<UIBase>;
 
 public class UIManager : SingletonMono<UIManager>
@@ -143,14 +144,14 @@ public class UIManager : SingletonMono<UIManager>
     
     #region UI资源
     
-    public Dictionary<Type, GameObject> mPrefabResDict = new Dictionary<Type, GameObject>();
+    public Dictionary<Type, Object> mPrefabResDict = new ();
     public const string UI_PATH = "UI/";
     
     private void Test_OnAssetReleaseHandler(Type rType)
     {
-        if (mPrefabResDict.TryGetValue(rType, out GameObject res))
+        if (mPrefabResDict.TryGetValue(rType, out Object res))
         {
-            Resources.UnloadAsset(res);
+            // Resources.UnloadAsset(res);
             mPrefabResDict.Remove(rType);
         }
     }
@@ -160,8 +161,8 @@ public class UIManager : SingletonMono<UIManager>
         string path = UI_PATH + rType.Name;
         ResourceRequest request = Resources.LoadAsync<GameObject>(path);
         var res = await request;
-        GameObject resPrefab = res as GameObject;
-        mPrefabResDict[rType] = resPrefab;
+        GameObject resPrefab = request.asset as GameObject;
+        mPrefabResDict[rType] = request.asset;
         return resPrefab;
     }
     
@@ -246,6 +247,11 @@ public class UIManager : SingletonMono<UIManager>
     public async UniTask HideAysnc<T>(bool rForceDestroy = false)
     { 
         await HideAsync(typeof(T), rForceDestroy);
+    }
+
+    public void Back()
+    {
+        BackAsync().Forget();
     }
     
     
@@ -398,7 +404,61 @@ public class UIManager : SingletonMono<UIManager>
             return null;
         }
     }
-    
+
+
+    private async UniTask BackAsync(bool rForceDestroy = false)
+    {
+        CancellationTokenSource timeoutCts = new CancellationTokenSource();
+
+        bool isStuck = false;
+        Task.Delay(TimeSpan.FromSeconds(StuckTime)).GetAwaiter().OnCompleted(() =>
+        {
+            if (timeoutCts.IsCancellationRequested) return;
+            OnStuckStart?.Invoke();
+            isStuck = true;
+        });
+        
+        UIBase curPanel = CurrentPanel;
+        if (curPanel == null)
+        {
+            timeoutCts.Cancel();
+            Debug.LogWarning("UIManager Warning: 当前没有打开的面板");
+            return;
+        }
+
+        mPanleStack.Pop();
+        if (mPanleStack.Count > 0)
+        {
+            (Type prePanelType, UIData preData) = mPanleStack.Peek();
+            if (preData != null && curPanel != null)
+            {
+                preData.Sender = curPanel.GetType();
+            }
+
+            GameObject instance = await RequestInstance(prePanelType, preData, mPanelLayer);
+            UIBase uiBase = instance.GetComponent<UIBase>();
+            await DoRefresh(uiBase);
+            curPanel.gameObject.SetActive(false);
+            DoUnbind(curPanel);
+            DoHide(curPanel);
+            if (curPanel.AutoDestroy || rForceDestroy) ReleaseInstance(curPanel.GetType());
+            instance.SetActive(true);
+            instance.transform.SetAsLastSibling();
+            DoBind(uiBase);
+            DoShow(uiBase);
+        }
+        else
+        {
+            curPanel.gameObject.SetActive(false);
+            DoUnbind(curPanel);
+            DoHide(curPanel);
+            if (curPanel.AutoDestroy || rForceDestroy) ReleaseInstance(curPanel.GetType());
+        }
+
+        timeoutCts.Cancel();
+        if (isStuck)
+           OnStuckEnd?.Invoke();
+    }
         
     public async UniTask HideAsync(Type rType, bool rForceDestroy = false)
     {
@@ -473,6 +533,10 @@ public class UIManager : SingletonMono<UIManager>
                     instance.SetActive(false);
                     if (uibase.AutoDestroy || rForceDestroy) 
                         ReleaseInstance(rType);
+                }
+                else
+                {
+                    Debug.LogWarning("UIManager Warning: 当前没有打开的弹窗");
                 }
             }
         }

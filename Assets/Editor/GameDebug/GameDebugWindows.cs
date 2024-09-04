@@ -34,9 +34,50 @@ public class UITestEditor
     }
     
     [Button]
-    private void OpenMainUI()
+    private void UIMain()
     {
         UIManager.Ins.Open<UIMain>();
+    }
+    
+        
+
+        
+    [Button]
+    private void UIEquip()
+    {
+        UIManager.Ins.Open<UIEquip>();
+    }
+    
+        
+    [Button]
+    private void UISetting()
+    {
+        UIManager.Ins.Open<UISetting>();
+    }
+
+    [Button]
+    private void UITip()
+    {
+        UIManager.Ins.Open<UITip>();
+    }
+    
+    
+    [Button]
+    private void UISettingClose()
+    {
+        UIManager.Ins.Hide<UISetting>();
+    }
+
+    [Button]
+    private void UITipClose()
+    {
+        UIManager.Ins.Hide<UITip>();
+    }
+
+    [Button]
+    private void Back()
+    {
+        UIManager.Ins.Back();
     }
 }
 

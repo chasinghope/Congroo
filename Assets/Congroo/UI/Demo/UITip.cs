@@ -9,7 +9,7 @@ namespace Congroo.UITest
         
     }
     
-    [UILayer(EUILayer.Panel)]
+    [UILayer(EUILayer.Popup)]
     public class UITip : UIComponent<UITipData>
     {
         [SerializeField] private Button mOkButton;

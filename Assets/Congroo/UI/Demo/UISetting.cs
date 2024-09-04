@@ -9,7 +9,7 @@ namespace Congroo.UITest
         
     }
     
-    [UILayer(EUILayer.Panel)]
+    [UILayer(EUILayer.Popup)]
     public class UISetting : UIComponent<UISettingData>
     {
         [SerializeField] private Button mOkButton;
