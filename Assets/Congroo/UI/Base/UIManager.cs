@@ -4,12 +4,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
-using System.Threading.Tasks;
+using Congroo.UI;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
-using UnityEngine.ResourceManagement;
-using GameObjectTask = Cysharp.Threading.Tasks.UniTask<UnityEngine.GameObject>;
 using Object = UnityEngine.Object;
+using GameObjectTask = Cysharp.Threading.Tasks.UniTask<UnityEngine.GameObject>;
 using UIBaseTask = Cysharp.Threading.Tasks.UniTask<UIBase>;
 
 public class UIManager : SingletonMono<UIManager>
@@ -17,8 +16,6 @@ public class UIManager : SingletonMono<UIManager>
     private readonly Dictionary<Type, GameObject> mInstanceDict = new Dictionary<Type, GameObject>();
     private readonly Stack<(Type type, UIData data)> mPanleStack = new Stack<(Type type, UIData data)>();
     private readonly Dictionary<Type, UILayerAttribute> mTypeLayerDict = new Dictionary<Type, UILayerAttribute>();
-    
-    private RectTransform mLayerTransform;
     
     
     [SerializeField] private Canvas mCanvas;
@@ -123,22 +120,27 @@ public class UIManager : SingletonMono<UIManager>
     #endregion
     
     
+    protected override void Awake()
+    {
+        base.Awake();
+        Initialize();
+    }
+    
     public void Initialize()
     {
         if (mCanvas == null) throw new Exception("UIFrame初始化失败，请设置Canvas");
         if (mCanvas.worldCamera == null) throw new Exception("UIFrame初始化失败，请给Canvas设置worldCamera");
         Canvas = mCanvas;
         Camera = mCanvas.worldCamera;
-        // mLayerTransform.anchorMin = Vector2.zero;
-        // mLayerTransform.anchorMax = Vector2.one;
-        // mLayerTransform.offsetMin = Vector2.zero;
-        // mLayerTransform.offsetMax = Vector2.zero;
 
         Stuck = mStuck;
         DontDestroyOnLoad(gameObject);
-
+        
         OnAssetRequest += Test_OnAssetRequestHandler;
         OnAssetRelease += Test_OnAssetReleaseHandler;
+        OnCreate += UIMgrExpand.OnCreate;
+        OnBind += UIMgrExpand.OnBind;
+        OnUnbind += UIMgrExpand.OnUnBind;
     }
 
     
@@ -179,9 +181,9 @@ public class UIManager : SingletonMono<UIManager>
     /// <typeparam name="T"></typeparam>
     public void Open(string rTypeName, UIData rData = null)
     {
-        Type type = Type.GetType(rTypeName);
+        Type type = Type.GetType(GetUITypeFullName(rTypeName));
+        ShowAsync(type, rData).Forget();
     }
-
     
     public void Open(Type rType, UIData rData = null) 
     {
@@ -203,6 +205,11 @@ public class UIManager : SingletonMono<UIManager>
          UIBase uiBase = await ShowAsync(typeof(T), rData);
          return uiBase as T;
     }
+    
+    public void Refresh<T>(UIData rData = null) where T : UIBase
+    {
+        RefreshAsync<T>(rData).Forget();
+    }
 
 
     /// <summary>
@@ -210,7 +217,7 @@ public class UIManager : SingletonMono<UIManager>
     /// </summary>
     /// <param name="rData"></param>
     /// <typeparam name="T"></typeparam>
-    public async UniTask Refresh<T>(UIData rData = null) where T : UIBase
+    public async UniTask RefreshAsync<T>(UIData rData = null) where T : UIBase
     {
         Type type = typeof(T);
         if (mInstanceDict.TryGetValue(type, out GameObject instance))
@@ -282,6 +289,19 @@ public class UIManager : SingletonMono<UIManager>
     }
 
     
+    public bool IsOpened(string rUITypeName)
+    {
+        Type type = Type.GetType(GetUITypeFullName(rUITypeName));
+#if UNITY_EDITOR
+        if (type == null || !type.IsSubclassOf(typeof(UIBase)))
+        {
+            Debug.LogError($"UIManager {rUITypeName} 不合法，请检查类型是否继承自UIBase");
+            return false; 
+        }
+#endif
+        return IsOpened(type);
+    }
+    
     /// <summary>
     /// ui是否被打开了
     /// </summary>
@@ -289,14 +309,20 @@ public class UIManager : SingletonMono<UIManager>
     /// <returns></returns>
     public bool IsOpened<T>() where T : UIBase
     {
-        if (mInstanceDict.TryGetValue(typeof(T), out GameObject instance))
+        return IsOpened(typeof(T));
+    }
+    
+    private bool IsOpened(Type rType)
+    {
+        if (mInstanceDict.TryGetValue(rType, out GameObject instance))
         {
             if (instance.activeInHierarchy)
                 return true;
         }
-
         return false;
     }
+    
+
     
     #endregion
 
@@ -411,7 +437,7 @@ public class UIManager : SingletonMono<UIManager>
         CancellationTokenSource timeoutCts = new CancellationTokenSource();
 
         bool isStuck = false;
-        Task.Delay(TimeSpan.FromSeconds(StuckTime)).GetAwaiter().OnCompleted(() =>
+        UniTask.Delay(TimeSpan.FromSeconds(StuckTime)).GetAwaiter().OnCompleted(() =>
         {
             if (timeoutCts.IsCancellationRequested) return;
             OnStuckStart?.Invoke();
@@ -436,16 +462,16 @@ public class UIManager : SingletonMono<UIManager>
             }
 
             GameObject instance = await RequestInstance(prePanelType, preData, mPanelLayer);
-            UIBase uiBase = instance.GetComponent<UIBase>();
-            await DoRefresh(uiBase);
+            UIBase newPanel = instance.GetComponent<UIBase>();
+            await DoRefresh(newPanel);
             curPanel.gameObject.SetActive(false);
             DoUnbind(curPanel);
             DoHide(curPanel);
             if (curPanel.AutoDestroy || rForceDestroy) ReleaseInstance(curPanel.GetType());
             instance.SetActive(true);
             instance.transform.SetAsLastSibling();
-            DoBind(uiBase);
-            DoShow(uiBase);
+            DoBind(newPanel);
+            DoShow(newPanel);
         }
         else
         {
@@ -472,67 +498,26 @@ public class UIManager : SingletonMono<UIManager>
         {
             if (uiLayerAttribute.Layer == EUILayer.Panel)
             {
-                CancellationTokenSource timeoutCts = new CancellationTokenSource();
-
-                bool isStuck = false;
-                Task.Delay(TimeSpan.FromSeconds(StuckTime)).GetAwaiter().OnCompleted(() =>
-                {
-                    if (timeoutCts.IsCancellationRequested) return;
-                    OnStuckStart?.Invoke();
-                    isStuck = true;
-                });
-                
-                UIBase curPanel = CurrentPanel;
-                if (curPanel == null)
-                {
-                    timeoutCts.Cancel();
-                    Debug.LogWarning("UIManager Warning: 当前没有打开的面板");
-                    return;
-                }
-
-                mPanleStack.Pop();
-                if (mPanleStack.Count <= 0)
-                {
-                    (Type prePanelType, UIData preData) = mPanleStack.Peek();
-                    if (preData != null && curPanel != null)
-                    {
-                        preData.Sender = curPanel.GetType();
-                    }
-
-                    GameObject instance = await RequestInstance(prePanelType, preData, mPanelLayer);
-                    UIBase uiBase = instance.GetComponent<UIBase>();
-                    await DoRefresh(uiBase);
-                    curPanel.gameObject.SetActive(false);
-                    DoUnbind(curPanel);
-                    DoHide(curPanel);
-                    if (curPanel.AutoDestroy || rForceDestroy) ReleaseInstance(curPanel.GetType());
-                    instance.SetActive(true);
-                    instance.transform.SetAsLastSibling();
-                    DoBind(uiBase);
-                    DoShow(uiBase);
-                }
-                else
-                {
-                    curPanel.gameObject.SetActive(false);
-                    DoUnbind(curPanel);
-                    DoHide(curPanel);
-                    if (curPanel.AutoDestroy || rForceDestroy) ReleaseInstance(curPanel.GetType());
-                }
-
-                timeoutCts.Cancel();
-                if (isStuck)
-                   OnStuckEnd?.Invoke();
+                await UniTask.CompletedTask;
             }
             else if(uiLayerAttribute.Layer == EUILayer.Popup)
             {
                 if (mInstanceDict.TryGetValue(rType, out GameObject instance))
                 {
                     UIBase uibase = instance.GetComponent<UIBase>();
-                    DoUnbind(uibase);
-                    DoHide(uibase);
-                    instance.SetActive(false);
-                    if (uibase.AutoDestroy || rForceDestroy) 
-                        ReleaseInstance(rType);
+                    if (uibase.gameObject.activeInHierarchy)
+                    {
+                        DoUnbind(uibase);
+                        DoHide(uibase);
+                        instance.SetActive(false);
+                        if (uibase.AutoDestroy || rForceDestroy) 
+                            ReleaseInstance(rType);
+                    }
+                    else
+                    {
+                        Debug.LogWarning("UIManager Warning: 当前弹窗已经被隐藏");
+                    }
+
                 }
                 else
                 {
@@ -590,16 +575,7 @@ public class UIManager : SingletonMono<UIManager>
             mInstanceDict.Remove(type);
         }
     }
-    
-    
-    // private bool TrySetData(UIBase rUI, UIData rData)
-    // {
-    //     if (rUI == null) return false;
-    //     PropertyInfo property = rUI.GetType().GetProperty("Data", BindingFlags.Public | BindingFlags.Instance);
-    //     if (property == null) return false;
-    //     property.SetValue(rUI, rData);
-    //     return true;
-    // }
+
 
     private bool TrySetData(UIBase rUI, UIData rData)
     {
@@ -618,6 +594,10 @@ public class UIManager : SingletonMono<UIManager>
         }
         return layer;
     }
+    
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private string GetUITypeFullName(string rUITypeName) => $"Congroo.UITest.{rUITypeName}";
 
     
     #region UIBase
@@ -675,19 +655,5 @@ public class UIManager : SingletonMono<UIManager>
         GameObject.Destroy(instance);
     }
     
-    
     #endregion
-    
-    
-
-   
-    // public void OpenStuck()
-    // {
-    //     Stuck.SetActive(true);
-    // }
-    //
-    // public void HideStuck()
-    // {
-    //     Stuck.SetActive(false);
-    // }
 }

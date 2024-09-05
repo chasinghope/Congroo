@@ -10,7 +10,7 @@ namespace Congroo.Core
 
         public static readonly Type[] EmptyTypes = new Type[0];
 
-        public static T Instance
+        public static T Ins
         {
             get
             {

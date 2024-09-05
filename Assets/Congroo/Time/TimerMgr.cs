@@ -27,7 +27,7 @@ namespace Congroo.Core
             float repeatInterva = 1f, Action finishCb = null)
         {
             long timerId = timerIdGenerator.Next;
-            var coroutine = CoroutineManager.Instance.StartCoroutine(TimeCoroutine(timerId, callBack, delay, doTimes, repeatInterva, finishCb), cancellationToken);
+            var coroutine = CoroutineManager.Ins.StartCoroutine(TimeCoroutine(timerId, callBack, delay, doTimes, repeatInterva, finishCb), cancellationToken);
             timerCoroutines.Add(timerId, coroutine);
             return timerId;
         }
@@ -40,7 +40,7 @@ namespace Congroo.Core
         {
             if (timerCoroutines.TryGetValue(timerId, out var coroutine))
             {
-                CoroutineManager.Instance.StopCoroutine(coroutine);
+                CoroutineManager.Ins.StopCoroutine(coroutine);
                 timerCoroutines.Remove(timerId);
             }
         }

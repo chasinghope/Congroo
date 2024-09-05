@@ -33,14 +33,14 @@ namespace Congroo.Core
 
         private JSONNode LoadJson(string file)
         {
-            var cfg = ResMgr.Instance.LoadAsset<TextAsset>($"cfgs/jsons/{file}.json");
+            var cfg = ResMgr.Ins.LoadAsset<TextAsset>($"cfgs/jsons/{file}.json");
             CfgLoadEvent();
             return JSON.Parse(cfg.text);
         }
 
         private ByteBuf LoadByteBuf(string file)
         {
-            var cfg = ResMgr.Instance.LoadAsset<TextAsset>($"cfgs/bytes/{file}.bytes");
+            var cfg = ResMgr.Ins.LoadAsset<TextAsset>($"cfgs/bytes/{file}.bytes");
             CfgLoadEvent();
             return new ByteBuf(cfg.bytes);
         }

@@ -23,14 +23,14 @@ namespace Congroo.Core
         public virtual void OnEnable()
         {
             CancelTokenSource = new CancellationTokenSource();
-            EventCenter.Instance.BindEventWrappers(mEventWrappers);
+            EventCenter.Ins.BindEventWrappers(mEventWrappers);
         }
 
 
         public virtual void OnDisable()
         {
             CancelTokenSource.Cancel();
-            EventCenter.Instance.UnbindEventWrappers(mEventWrappers);
+            EventCenter.Ins.UnbindEventWrappers(mEventWrappers);
         }
 
 

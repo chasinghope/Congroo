@@ -6,7 +6,7 @@ public class GameManager : MonoBehaviour
 {
     private void Start()
     {
-        CfgTable.Instance.Initialize();
-        Debug.Log(CfgTable.Instance.Tables.TBGLConst.DataList[0].SheepUpSpeed);
+        CfgTable.Ins.Initialize();
+        Debug.Log(CfgTable.Ins.Tables.TBGLConst.DataList[0].SheepUpSpeed);
     }
 }

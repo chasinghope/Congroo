@@ -102,10 +102,10 @@ namespace Congroo.Core
 		{
 			if (mHandle != -1)
 			{
-				TimerMgr.Instance.EndTimer(mHandle);
+				TimerMgr.Ins.EndTimer(mHandle);
 			}
 			mHeartBeatTick = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
-			mHandle = TimerMgr.Instance.StartTimer(TokenSource.Token, () =>
+			mHandle = TimerMgr.Ins.StartTimer(TokenSource.Token, () =>
 			{
 				SendHeartBeat();
 			}, 0, -1, SEND_INTERVAL);

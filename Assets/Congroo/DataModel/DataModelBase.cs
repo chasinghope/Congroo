@@ -12,14 +12,14 @@ namespace Congroo.Core
         public virtual void Initialize()
         {
             CancelTokenSource = new CancellationTokenSource();
-            EventCenter.Instance.BindEventWrappers(mEventWrappers);
+            EventCenter.Ins.BindEventWrappers(mEventWrappers);
         }
 
 
         public virtual void Release()
         {
             CancelTokenSource.Cancel();
-            EventCenter.Instance.UnbindEventWrappers(mEventWrappers);
+            EventCenter.Ins.UnbindEventWrappers(mEventWrappers);
         }
 
     }

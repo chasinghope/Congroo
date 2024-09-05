@@ -7,11 +7,11 @@ public class SaveSystemTest : MonoBehaviour
 {
     private async void Start()
     {
-        await GameSaveSystem.Instance.Load();
-        GameSaveSystem.Instance.SetUserName();
-        GameSaveSystem.Instance.SetUserSlotId();
-        GameSaveSystem.Instance.UserSlotData.PlayerGlobalData.PlayerName = "Andy";
-        await GameSaveSystem.Instance.Save();
-        GameSaveSystem.Instance.Debug();
+        await GameSaveSystem.Ins.Load();
+        GameSaveSystem.Ins.SetUserName();
+        GameSaveSystem.Ins.SetUserSlotId();
+        GameSaveSystem.Ins.UserSlotData.PlayerGlobalData.PlayerName = "Andy";
+        await GameSaveSystem.Ins.Save();
+        GameSaveSystem.Ins.Debug();
     }
 }

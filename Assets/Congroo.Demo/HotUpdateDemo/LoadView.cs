@@ -83,7 +83,7 @@ public class LoadView : MonoBehaviour
     {
         CLog.L(LType.HotUpdate, $"StartGame");
         await UniTask.Yield();
-        GameObject go = await ResMgr.Instance.LoadAssetAsync<GameObject>("Prefabs/Bee_01.prefab");
+        GameObject go = await ResMgr.Ins.LoadAssetAsync<GameObject>("Prefabs/Bee_01.prefab");
         Instantiate(go);
     }
 }

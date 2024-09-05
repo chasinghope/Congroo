@@ -18,12 +18,12 @@ namespace Congroo.Core
 
         public virtual void OnEnable()
         {
-            EventCenter.Instance.BindEventWrappers(mEventWrappers);
+            EventCenter.Ins.BindEventWrappers(mEventWrappers);
         }
 
         public virtual void OnDisable()
         {
-            EventCenter.Instance.UnbindEventWrappers(mEventWrappers);
+            EventCenter.Ins.UnbindEventWrappers(mEventWrappers);
         }
 
         #endregion

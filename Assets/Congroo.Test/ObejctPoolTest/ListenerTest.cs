@@ -16,7 +16,7 @@ public class ListenerTest : MonoBehaviour
 
     private void OnEnable()
     {
-        EventCenter.Instance.Binding(TestEvents.TestEvent001, TestEvent001_OnHandler);
+        EventCenter.Ins.Binding(TestEvents.TestEvent001, TestEvent001_OnHandler);
 
     }
 
@@ -30,7 +30,7 @@ public class ListenerTest : MonoBehaviour
 
     private void OnDisable()
     {
-        EventCenter.Instance.Unbinding(TestEvents.TestEvent001, TestEvent001_OnHandler);
+        EventCenter.Ins.Unbinding(TestEvents.TestEvent001, TestEvent001_OnHandler);
     }
 }
 
